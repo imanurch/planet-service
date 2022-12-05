@@ -1,16 +1,19 @@
 <?php
-$email = $_POST['email'];
-$name = $_POST['password'];
+require 'function.php';
+if(isset($_POST['login'])){
+  $email = $_POST['email'];
+  $password = $_POST['password'];
 
-if(isset($_POST['submit'])){
-    if(empty($_POST['email'])|| ($_POST["email"] != 'admin')) {
-        $errEmail = 'Masukkan email yang sesuai';
-    }
+  $result = mysqli_query($conn, "SELECT * FROM user WHERE email = '$email' AND password = '$password'");
 
-    else if(empty($_POST['password']) || ($_POST["password"] != 'admin')){
-        $errPassword = 'Masukkan password yang sesuai';
+    if(mysqli_num_rows($result) > 0){
+      header('refresh:0; url=dashboard.php');
+      
     }
-}
+    else{
+      echo "<script>alert('email atau password yang anda masukkan salah')</script>";
+    }
+  }
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +34,7 @@ if(isset($_POST['submit'])){
       <div class="col-12 col-sm-12 col-md-6 py-4">
         <h3>LOGIN</h3>
         <p>Lengkapi Email dan Kata Sandi yang terdaftar pada aplikasi</p>
-        <form class="my-5 px-5 mx-3" action="../dashboard.html" method="post">
+        <form class="my-5 px-5 mx-3" action="" method="post">
           <div class="mb-3">
             <label for="InputEmail" class="form-label">Email</label>
             <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" name="email" />
@@ -40,7 +43,7 @@ if(isset($_POST['submit'])){
             <label for="InputPassword" class="form-label">Kata Sandi</label>
             <input type="password" class="form-control" id="InputPassword" name="password" />
           </div>
-          <button type="submit" class="btn btn-secondary">Login</button>
+          <button type="submit" class="btn btn-secondary" name="login">Login</button>
         </form>
       </div>
     </div>

@@ -1,3 +1,21 @@
+<?php
+require 'function.php';
+if(isset($_POST['submit'])){
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+  $result = mysqli_query($conn, "SELECT * FROM user WHERE email = '$email' AND password = '$password'");
+
+
+    if(mysqli_num_rows($result) === 1){
+      echo "<script>alert('email atau password yang anda masukkan benar')</script>";
+    }
+    else{
+      echo "<script>alert('email atau password yang anda masukkan salah')</script>";
+    }
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,16 +34,19 @@
       <div class="col-12 col-sm-12 col-md-6 py-4">
         <h3>LOGIN</h3>
         <p>Lengkapi Email dan Kata Sandi yang terdaftar pada aplikasi</p>
-        <form class="my-5 px-5 mx-3">
+        <form class="my-5 px-5 mx-3" action="" method="post">
           <div class="mb-3">
             <label for="InputEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" />
+            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" name="email" />
           </div>
           <div class="mb-3">
             <label for="InputPassword" class="form-label">Kata Sandi</label>
-            <input type="password" class="form-control" id="InputPassword" />
+            <input type="password" class="form-control" id="InputPassword" name="password" />
           </div>
-          <button type="login" class="btn btn-secondary">Login</button>
+          <!-- <?php if(isset($error)): ?>
+            <p>email/password salah</p>
+            <?php endif;?> -->
+          <button type="submit" class="btn btn-secondary">Login</button>
         </form>
       </div>
     </div>

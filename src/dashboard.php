@@ -1,3 +1,17 @@
+<?php
+include 'function.php';
+
+$layanan = mysqli_query($conn, "SELECT * FROM layanan");
+$sparepart = mysqli_query($conn, "SELECT DISTINCT nama FROM sparepart");
+$teknisi = mysqli_query($conn, "SELECT * FROM teknisi");
+$transaksi = mysqli_query($conn, "SELECT * FROM transaksi");
+
+$jml_layanan = mysqli_num_rows($layanan);
+$jml_sparepart = mysqli_num_rows($sparepart);
+$jml_teknisi = mysqli_num_rows($teknisi);
+$jml_transaksi = mysqli_num_rows($transaksi);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -58,7 +72,7 @@
               </div>
               <div class="text-end py-2">
                 <p class="text-sm mb-0 text-capitalize">Total Transaksi</p>
-                <h4 class="mb-0 pb-0">104</h4>
+                <h4 class="mb-0 pb-0"><?php echo $jml_transaksi;?></h4>
               </div>
             </div>
             <hr class="horizontal my-0" />
@@ -74,8 +88,8 @@
                 <img src="../pic/ava.png" class="py-1 my-0" style="width: 4rem; float: left" alt="" />
               </div>
               <div class="text-end py-2">
-                <p class="text-sm mb-0 text-capitalize">Total Transaksi</p>
-                <h4 class="mb-0 pb-0">104</h4>
+                <p class="text-sm mb-0 text-capitalize">Total Jenis Sparepart</p>
+                <h4 class="mb-0 pb-0"><?php echo $jml_sparepart;?></h4>
               </div>
             </div>
             <hr class="horizontal my-0" />
@@ -91,8 +105,8 @@
                 <img src="../pic/ava.png" class="py-1 my-0" style="width: 4rem; float: left" alt="" />
               </div>
               <div class="text-end py-2">
-                <p class="text-sm mb-0 text-capitalize">Total Transaksi</p>
-                <h4 class="mb-0 pb-0">104</h4>
+                <p class="text-sm mb-0 text-capitalize">Total Jenis Layanan</p>
+                <h4 class="mb-0 pb-0"><?php echo $jml_layanan;?></h4>
               </div>
             </div>
             <hr class="horizontal my-0" />
@@ -108,8 +122,8 @@
                 <img src="../pic/ava.png" class="py-1 my-0" style="width: 4rem; float: left" alt="" />
               </div>
               <div class="text-end py-2">
-                <p class="text-sm mb-0 text-capitalize">Total Transaksi</p>
-                <h4 class="mb-0 pb-0">104</h4>
+                <p class="text-sm mb-0 text-capitalize">Jumlah Teknisi</p>
+                <h4 class="mb-0 pb-0"><?php echo $jml_teknisi;?></h4>
               </div>
             </div>
             <hr class="horizontal my-0" />
@@ -126,7 +140,7 @@
                 <h5>Grafik Penjualan</h5>
                 <p class="text-sm">
                   <i class="fa fa-arrow-up text-success"></i>
-                  <span class="font-weight-bold">Meningkat 4%</span> dari tahun lalu
+                  <span class="font-weight-bold">Meningkat 4%</span> dari bulan lalu
                 </p>
               </div>
               <div class="card-body p-3">
