@@ -1,4 +1,18 @@
 <?php
+session_start();
+
+if(!isset($_SESSION["Login"])){
+  header('refresh:0; url = login.php');
+  exit;
+}
+
+if(isset($_POST["logout"])){
+  session_unset();
+  session_destroy();
+  header('refresh:0; url=home.php');
+  exit();
+}
+
 include 'function.php';
 
 $layanan = mysqli_query($conn, "SELECT * FROM layanan");
@@ -40,10 +54,10 @@ $jml_transaksi = mysqli_num_rows($transaksi);
         </div>
       </div>
       <div class="position-absolute bottom-0 p-5 text-second text-center">
-        <div>
-          <img src="../pic/" style="width: 25px" alt="" />
-          <a href="../src/home.html" class="">Logout</a>
-        </div>
+        <form action="" method="post" >
+          <button type="submit" name="logout">Logout</button>
+          <!-- <a href="../src/home.html" class="">Logout</a> -->
+        </form>
       </div>
     </div>
 

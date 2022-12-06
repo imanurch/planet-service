@@ -1,4 +1,18 @@
 <?php
+session_start();
+
+if(!isset($_SESSION["Login"])){
+  header('refresh:0; url = login.php');
+  exit;
+}
+
+if(isset($_POST["logout"])){
+  session_unset();
+  session_destroy();
+  header('refresh:0; url=home.php');
+  exit();
+}
+
 include 'function.php';
 
 $field = "nama";
@@ -188,7 +202,7 @@ if(isset($_POST["submit"])){
                 <td class="text-center mb-0"><?= $spr["harga"];?></td>
                 <td>
                 <!-- <a href="data_produk.php?id=<?= $spr["id_sparepart"];?>">Edit</a> -->
-                <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit<?php echo $spr["id_sparepart"];?>"> Edit </button> -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit<?php echo $spr["id_sparepart"];?>"> Edit </button>
                 </td>
                 <!-- <td>
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -199,12 +213,12 @@ if(isset($_POST["submit"])){
                   <li><a class="dropdown-item" href="#">Another action</a></li>
                 </ul>
                 </td> -->
-                <td class="align-middle">
+                <!-- <td class="align-middle">
                   <div class="col-md-7">
                   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">
                     <a href="data_produk.php?id=<?= $spr["id_sparepart"];?>">Edit</a>
                   </button>
-                </td>
+                </td> -->
                 <!-- <td><a href="hapus.php?id=<?= $spr["id_sparepart"];?>">delete</a></td> -->
               </tr>
               <?php $no++; ?>

@@ -1,4 +1,18 @@
 <?php
+session_start();
+
+if(!isset($_SESSION["Login"])){
+  header('refresh:0; url = login.php');
+  exit;
+}
+
+if(isset($_POST["logout"])){
+  session_unset();
+  session_destroy();
+  header('refresh:0; url=home.php');
+  exit();
+}
+
 include 'function.php';
 
 $field = "tipe_layanan";
@@ -80,10 +94,10 @@ if(isset($_POST["submit"])){
         </div>
       </div>
       <div class="position-absolute bottom-0 p-5 text-second text-center">
-        <div>
-          <img src="../pic/" style="width: 25px" alt="" />
-          <a href="../src/home.html" class="">Logout</a>
-        </div>
+        <form action="" method="post" >
+          <button type="submit" name="logout">Logout</button>
+          <!-- <a href="../src/home.html" class="">Logout</a> -->
+        </form>
       </div>
     </div>
 
@@ -162,7 +176,7 @@ if(isset($_POST["submit"])){
           <div class="row" style="width:170px">
             <div class="col-12 my-3">
               <div class="input-group">
-                <select name="sort" id="sort" class="autosubmit form-control">
+                <select name="sort" id="sort" class="form-control">
                   <option selected disabled>--pilih--</option>
                   <option value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
                   <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>

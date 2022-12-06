@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if(isset($_SESSION["Login"])){
+  header('refresh:0; url = dashboard.php');
+  exit;
+}
+
 require 'function.php';
 if(isset($_POST['login'])){
   $email = $_POST['email'];
@@ -7,10 +14,11 @@ if(isset($_POST['login'])){
   $result = mysqli_query($conn, "SELECT * FROM user WHERE email = '$email' AND password = '$password'");
 
     if(mysqli_num_rows($result) > 0){
+      $_SESSION["Login"] = true;
       header('refresh:0; url=dashboard.php');
-      
     }
     else{
+      header('refresh:0; url=login.php');
       echo "<script>alert('email atau password yang anda masukkan salah')</script>";
     }
   }
