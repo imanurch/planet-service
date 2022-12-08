@@ -15,22 +15,23 @@ if(isset($_POST["logout"])){
 
 include 'function.php';
 
+$total_layanan = mysqli_query($conn, "SELECT * FROM layanan");
+$total_row = mysqli_num_rows($total_layanan);
+
 $field = "tipe_layanan";
-  if(isset($_GET['sort'])){
-    $field = $_GET['sort'];
-  }
+if(isset($_POST['sort'])){
+  $field = $_POST['sort'];
+}
 // $layanan = query("SELECT tipe_layanan, keluhan, biaya FROM layanan ORDER BY $field ASC");
 
-$urut = "ASC";
-if(isset($_POST['DESC'])){
-  $urut = $_POST['DESC'];
+$flow = "ASC";
+if(isset($_POST['flow'])){
+  $flow = $_POST['flow'];
 }
 
 $max = "10";
-if(isset($_GET['10'])){
-  $max = 10;
-} else if(isset($_GET['25'])){
-  $max = 25;
+if(isset($_POST['max'])){
+  $max = $_POST['max'];
 }
 
 // $range = 20;
@@ -40,20 +41,20 @@ if(isset($_GET['10'])){
 //   $range = "10,4";
 // }
 
-if(isset($_GET["search"])){
-  $search = $_GET["search"];
+if(isset($_POST["submitsearch"])){
+  $search = $_POST["search"];
   $layanan = query("SELECT * FROM layanan 
                       WHERE tipe_layanan LIKE '%$search%' 
                       OR keluhan LIKE '%$search%'
                       OR biaya LIKE '%$search%'
-                      ORDER BY $field $urut LIMIT $max");
+                      ORDER BY $field $flow LIMIT $max");
 } else{
-  $layanan = query("SELECT * FROM layanan ORDER BY $field $urut LIMIT $max"); 
+  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $max"); 
 }
 
 if(isset($_POST["reset"])){
   $reset = $_POST["reset"];
-  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT 20");
+  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT 10");
 }
 
 if(isset($_POST["submit"])){
@@ -85,18 +86,19 @@ if(isset($_POST["submit"])){
 
       <div class="menu">
         <div class="list-group mt-5 mx-3">
-          <a href="/src/dashboard.html" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
-          <a href="/src/transaksi_baru.html" class="list-group-item list-group-item-action">Servis Baru</a>
-          <a href="/src/data_transaksi.html" class="list-group-item list-group-item-action">Data Transaksi</a>
-          <a href="/src/data_layanan.html" class="list-group-item list-group-item-action">Data Layanan</a>
-          <a href="/src/data_produk.html" class="list-group-item list-group-item-action">Data Produk</a>
-          <a href="/src/data_teknisi.html" class="list-group-item list-group-item-action">Data Teknisi</a>
+          <a href="dashboard.php" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
+          <a href="transaksi_baru.php" class="list-group-item list-group-item-action">Servis Baru</a>
+          <a href="data_transaksi.php" class="list-group-item list-group-item-action">Data Transaksi</a>
+          <a href="data_layanan.php" class="list-group-item list-group-item-action">Data Layanan</a>
+          <a href="data_produk.php" class="list-group-item list-group-item-action">Data Sparepart</a>
+          <a href="data_device.php" class="list-group-item list-group-item-action">Data Device</a>
+          <a href="data_pelanggan.php" class="list-group-item list-group-item-action">Data Pelanggan</a>
+          <a href="data_teknisi.php" class="list-group-item list-group-item-action">Data Teknisi</a>
         </div>
       </div>
       <div class="position-absolute bottom-0 p-5 text-second text-center">
         <form action="" method="post" >
-          <button type="submit" name="logout">Logout</button>
-          <!-- <a href="../src/home.html" class="">Logout</a> -->
+        <button class="btn text-secondary" type="submit" name="logout"><img class="me-1" src="../pic/logout.svg" alt=""> Logout</button>
         </form>
       </div>
     </div>
@@ -119,26 +121,51 @@ if(isset($_POST["submit"])){
           <p>Daftar jasa layanan yang tersedia</p>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div style="width:200px;">
-          <div class="input-group">
-            <form action="" method="get">
-              <input type="search" id="form1" class="form-control " placeholder="Cari..." name="search" />
-              <!-- <img src="../pic/search.png" alt="" style="width: 15px;"> -->
+        <!-- FILTER DATA DALAM TABEL -->
+        <nav class="navbar bg-light mt-5">
+          <div class="container-fluid">
+            <!-- RESET FILTER -->
+            <form class="d-flex m-1" action="" method="post">
+              <button class="btn btn-outline-success ms-1" style="" id="reset" name="reset">
+                Reset filter
+              </button>
             </form>
-            <!-- <button type="button" class="btn btn-primary" style="float:right;">
-              <img src="../pic/search.png" alt="" style="width: 15px;">
-              <i class="fas fa-search"></i>
-            </button> -->
-          </div>            
-        </div>
-        
-        <!-- BUTTON MODAL INSERT -->
-        <div class="col-12">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
-            Tambah Data
-          </button>
-        </div>  
+            <!-- SEARCH BAR -->
+            <form class="d-flex m-1" role="search" action="" method="post">
+              <input class="form-control me-1" type="search" placeholder="Search" aria-label="Search" name="search">
+              <button class="btn btn-outline-success" type="submit" name="submitsearch">Search</button>
+            </form>
+            <!-- SORTING -->
+            <form class="d-flex m-1" action="" method="post">
+              <select name="sort" id="sort" class="form-select ">
+                <!-- <option selected disabled>--pilih--</option> -->
+                <option selected value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
+                <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>
+                <option value="biaya" <?php if(isset($_GET['sort']) && $_GET['sort'] == "biaya"){echo "selected";}?>>biaya</option>
+              </select>
+              <select name="flow" id="flow" class="form-select">
+                <!-- <option selected disabled>--pilih--</option> -->
+                <option selected value="ASC" <?php if(isset($_GET['flow']) && $_GET['flow'] == "ASC"){echo "selected";}?>>ASC</option>
+                <option value="DESC" <?php if(isset($_GET['flow']) && $_GET['flow'] == "DESC"){echo "selected";}?>>DESC</option>
+              </select>
+              <button class="btn btn-outline-success ms-1" type="submit" name="submitsort">Sort</button>
+            </form>
+            <!-- MAKSIMUM ROW DATA -->
+            <form class="d-flex m-1" action="" method="post">
+              <select name="max" id="max" class="form-select ">
+                <option selected value="10" <?php if(isset($_GET['max']) && $_GET['max'] == "10"){echo "selected";}?>>10</option>
+                <option value="25" <?php if(isset($_GET['max']) && $_GET['max'] == "25"){echo "selected";}?>>25</option>
+                <option value="50" <?php if(isset($_GET['max']) && $_GET['max'] == "50"){echo "selected";}?>>50</option>
+              </select>
+              <button class="btn btn-outline-success ms-1" type="submit" name="submitmax">Sort</button>
+            </form>
+            <!-- BUTTON MODAL INSERT --> 
+            <button type="button" class="btn btn btn-outline-success ms-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
+              Tambah Data
+            </button>
+          </div>
+        </nav>
+
         <!-- MODAL INSERT -->
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog">
@@ -171,44 +198,9 @@ if(isset($_POST["submit"])){
           </div>
         </div>
 
-        <!-- SORT -->
-        <form action="" method="get">
-          <div class="row" style="width:170px">
-            <div class="col-12 my-3">
-              <div class="input-group">
-                <select name="sort" id="sort" class="form-control">
-                  <option selected disabled>--pilih--</option>
-                  <option value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
-                  <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>
-                  <option value="biaya" <?php if(isset($_GET['sort']) && $_GET['sort'] == "biaya"){echo "selected";}?>>biaya</option>
-                </select>
-                <button type="submit" class="input-group-text btn btn-secondary" name="submit" >Urut</button>
-              </div>
-              <form action="" method="post">
-                <input class="form-check-input" type="checkbox" value="" name="DESC" id="DESC">
-                <label class="form-check-label" for="flexCheckDefault">
-                  DESC
-                </label>
-              </form>
-            </div>
-          </div>
-        </form>
-
-        <!-- switch -->
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-          <label class="form-check-label" for="flexSwitchCheckChecked">Descending</label>
-        </div>
-
-        <!-- RESET FILTER -->
-        <form action="" method="post">
-          <button class="input-group-text btn btn-secondary" style="" id="reset" name="reset">
-            Reset filter
-          </button>
-        </form>
-
         <!-- TABEL DATA LAYANAN -->
-        <div class="col-12 my-3">
+        <p class="mt-3 mb-0 text-secondary">Total Data : <?php echo $total_row; ?></p>
+        <div class="col-12 mb-3">
           <table class="table border">
             <thead class="text-center">
               <tr>
@@ -216,6 +208,7 @@ if(isset($_POST["submit"])){
                 <th class="text-secondary">TIPE LAYANAN</th>
                 <th class="text-secondary">KELUHAN</th>
                 <th class="text-secondary">BIAYA</th>
+                <th></th>
                 <th></th>
               </tr>
             </thead>
@@ -227,15 +220,77 @@ if(isset($_POST["submit"])){
                 <td class="mb-0"><?= $ly["tipe_layanan"];?></td>
                 <td class="mb-0"><?= $ly["keluhan"];?></td>
                 <td class="text-center mb-0"><?= $ly["biaya"];?></td>
-                <td class="align-middle">
-                  <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user"> Edit </a>
-                </td>
+                <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $ly["id_layanan"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $ly["id_layanan"];?>"><img src="../pic/edit.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $ly["id_layanan"];?>"><img src="../pic/trash.svg" alt=""></a></td>
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>
             </tbody>
           </table>
+        </div> 
+        <div class = "text-center mb-4">
+          <button class="btn btn-secondary"><img src="../pic/chevron-left.svg" alt=""></button>
+          <button class="btn btn-secondary"><img src="../pic/chevron-right.svg" alt=""></button>
         </div>
+        
+      </div>
+    </div>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+  </body>
+</html>
+
+        <!-- SEARCH BAR -->
+        <!-- <div style="width:200px;">
+          <div class="input-group">
+            <form action="" method="get">
+              <input type="search" id="form1" class="form-control " placeholder="Cari..." name="search" />
+            </form>
+          </div>            
+        </div> -->
+        <!-- MAX DATA -->
+          <!-- <form action="" method="get" class="px-0">
+            <div class="input-group">
+              <button type="submit" class="input-group-text btn btn-secondary" name = "10" >10</button>
+              <button type="submit" class="input-group-text btn btn-secondary" name = "25" >25</button>
+            </div>
+          </form> -->
+                
+        <!-- BUTTON MODAL INSERT -->
+        <!-- <div class="col-12">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
+            Tambah Data
+          </button>
+        </div>   -->
+        
+        <!-- SORT -->
+        <!-- <form action="" method="get">
+          <div class="row" style="width:170px">
+            <div class="col-12 my-3">
+              <div class="input-group">
+                <select name="sort" id="sort" class="form-control">
+                  <option selected disabled>--pilih--</option>
+                  <option value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
+                  <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>
+                  <option value="biaya" <?php if(isset($_GET['sort']) && $_GET['sort'] == "biaya"){echo "selected";}?>>biaya</option>
+                </select>
+                <button type="submit" class="input-group-text btn btn-secondary" name="submit" >Urut</button>
+              </div>
+            </div>
+          </div>
+        </form> -->
+
+        <!-- switch -->
+        <!-- <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+          <label class="form-check-label" for="flexSwitchCheckChecked">Descending</label>
+        </div> -->
+
+        <!-- RESET FILTER -->
+        <!-- <form action="" method="post">
+          <button class="input-group-text btn btn-secondary" style="" id="reset" name="reset">
+            Reset filter
+          </button>
+        </form> -->
 
         <!-- RANGE DATA -->
         <!-- <form action="" method="get" class="px-0">
@@ -245,16 +300,3 @@ if(isset($_POST["submit"])){
             <button type="submit" class="input-group-text btn btn-secondary" name = "pg3" >3</button>
           </div>
         </form> -->
-
-        <!-- MAX DATA -->
-        <form action="" method="get" class="px-0">
-          <div class="input-group">
-            <button type="submit" class="input-group-text btn btn-secondary" name = "10" >10</button>
-            <button type="submit" class="input-group-text btn btn-secondary" name = "25" >25</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
-  </body>
-</html>

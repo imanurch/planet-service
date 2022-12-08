@@ -21,36 +21,34 @@ function hapus($id){
     return mysqli_affected_rows($conn);
 }
 
-// function tambah_servis($data){
-//     global $conn;
-//     $date = $data["date"];
-//     $nama_pelanggan = $data["nama_pelanggan"];
-//     $no_telp = $data["no_telp"];
-//     $alamat = $data["alamat"];
-//     $tipe_layanan = $data["tipe_layanan"];
-//     $nama_device = $data["nama_device"];
-//     $keluhan = $data["keluhan"];
-//     $alamat = $data["alamat"];
-//     $nama_sparepart = $data["nama_sparepart"];
-//     $tipe_hp = $data["tipe_hp"];
-//     $nama_teknisi = $data["nama_teknisi"];
+function tambah_servis($data){
+    global $conn;
+    $id_servis = getLastID($conn, 'servis', 'id_servis');
+    $tgl_masuk = $data["tgl_masuk"];
+    $id_teknisi = $data["id_teknisi"];
+    $id_pelanggan = $data["id_pelanggan"];
+    $id_device = $data["id_device"];
+    $id_layanan = $data["id_layanan"];
+    $id_sparepart = $data["id_sparepart"];
+    $jml_sparepart = $data["jml_sparepart"];
+    // $total_biaya =;
 
-//     $query = "INSERT INTO pelanggan
-//                 VALUES
-//                 ('', '$nama_pelanggan','$no_telp','$alamat')";
+
+    $query = "INSERT INTO servis
+                VALUES
+                ('$id_servis','$kode_servis','$tgl_masuk','$id_teknisi', $id_pelanggan)";
     
-//     $query = "INSERT INTO detail_servis
-//                 VALUES
-//                 ('','','','','$nama_device','','','','','')";
+    $query = "INSERT INTO detail_servis
+                VALUES
+                ('$id_servis','$id_device','$id_layanan','$id_sparepart','$jml_sparepart','$biaya_sparepart')";
     
-//     $query = "INSERT INTO servis
-//                 VALUES
-//                 ('', '','')";
+    $query = "INSERT INTO transaksi
+                VALUES 
+                ('','$id_servis','$total_biaya','');
 
-//     mysqli_query($conn,$query);
-
-//     return mysqli_affected_rows($conn);
-// }
+    mysqli_query($conn,$query);
+    return mysqli_affected_rows($conn);
+}
 
 function tambah_sparepart($data){
     global $conn;
@@ -80,6 +78,36 @@ function tambah_teknisi($data){
     $query = "INSERT INTO teknisi
                 VALUES
                 ('', '$nama','$ttl','$telp','$alamat')";
+
+    mysqli_query($conn,$query);
+
+    return mysqli_affected_rows($conn);
+}
+
+function tambah_pelanggan($data){
+    global $conn;
+
+    $nama = $data["nama"];
+    $no_telp = $data["no_telp"];
+    $alamat = $data["alamat"];
+
+    $query = "INSERT INTO pelanggan
+                VALUES
+                ('', '$nama','$no_telp','$alamat')";
+
+    mysqli_query($conn,$query);
+
+    return mysqli_affected_rows($conn);
+}
+
+function tambah_device($data){
+    global $conn;
+
+    $nama = $data["nama"];
+
+    $query = "INSERT INTO device
+                VALUES
+                ('', '$nama')";
 
     mysqli_query($conn,$query);
 

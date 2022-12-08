@@ -45,24 +45,25 @@ $jml_transaksi = mysqli_num_rows($transaksi);
 
       <div class="menu">
         <div class="list-group mt-5 mx-3">
-          <a href="/src/dashboard.html" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
-          <a href="/src/transaksi_baru.html" class="list-group-item list-group-item-action">Servis Baru</a>
-          <a href="/src/data_transaksi.html" class="list-group-item list-group-item-action">Data Transaksi</a>
-          <a href="/src/data_layanan.html" class="list-group-item list-group-item-action">Data Layanan</a>
-          <a href="/src/data_produk.html" class="list-group-item list-group-item-action">Data Produk</a>
-          <a href="/src/data_teknisi.html" class="list-group-item list-group-item-action">Data Teknisi</a>
+          <a href="dashboard.php" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
+          <a href="transaksi_baru.php" class="list-group-item list-group-item-action">Servis Baru</a>
+          <a href="data_transaksi.php" class="list-group-item list-group-item-action">Data Transaksi</a>
+          <a href="data_layanan.php" class="list-group-item list-group-item-action">Data Layanan</a>
+          <a href="data_produk.php" class="list-group-item list-group-item-action">Data Sparepart</a>
+          <a href="data_device.php" class="list-group-item list-group-item-action">Data Device</a>
+          <a href="data_pelanggan.php" class="list-group-item list-group-item-action">Data Pelanggan</a>
+          <a href="data_teknisi.php" class="list-group-item list-group-item-action">Data Teknisi</a>
         </div>
       </div>
       <div class="position-absolute bottom-0 p-5 text-second text-center">
         <form action="" method="post" >
-          <button type="submit" name="logout">Logout</button>
-          <!-- <a href="../src/home.html" class="">Logout</a> -->
+        <button class="btn text-secondary" type="submit" name="logout"><img class="me-1" src="../pic/logout.svg" alt=""> Logout</button>
         </form>
       </div>
     </div>
 
     <!-- konten -->
-    <div class="" style="margin-left: 200px">
+    <div class="px-2" style="margin-left: 200px">
       <nav class="navbar navbar-main navbar-expand-lg pt-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
         <div class="container-fluid">
           <nav aria-label="breadcrumb">

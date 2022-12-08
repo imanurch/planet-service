@@ -15,7 +15,7 @@ if(isset($_POST["logout"])){
 
 include 'function.php';
 
-$total_layanan = mysqli_query($conn, "SELECT * FROM teknisi");
+$total_layanan = mysqli_query($conn, "SELECT * FROM pelanggan");
 $total_row = mysqli_num_rows($total_layanan);
 
 $field = "nama";
@@ -35,24 +35,23 @@ if(isset($_POST['max'])){
 
 if(isset($_POST["reset"])){
   $reset = $_POST["reset"];
-  $teknisi = query("SELECT * FROM teknisi ORDER BY nama ASC LIMIT 10");
+  $pelanggan = query("SELECT * FROM pelanggan ORDER BY nama ASC LIMIT 10");
 }
 
 if(isset($_POST["submitsearch"])){
   $search = $_POST["search"];
-  $teknisi = query("SELECT * FROM teknisi 
+  $pelanggan = query("SELECT * FROM pelanggan 
                       WHERE nama LIKE '%$search%' 
-                      OR tgl_lahir LIKE '%$search%'
                       OR no_telp LIKE '%$search%'
                       OR alamat LIKE '%$search%'
                       ORDER BY $field $flow LIMIT $max");
 } else{
-  $teknisi = query("SELECT * FROM teknisi ORDER BY $field $flow LIMIT $max"); 
+  $pelanggan = query("SELECT * FROM pelanggan ORDER BY $field $flow LIMIT $max"); 
 }
 
 if(isset($_POST["submit"])){
-  if(tambah_teknisi($_POST) > 0){
-    header('refresh:0; url=data_teknisi.php');
+  if(tambah_pelanggan($_POST) > 0){
+    header('refresh:0; url=data_pelanggan.php');
     echo "<script>alert('data berhasil ditambahkan')</script>";
   } else{
     echo "<script>alert('data gagal ditambahkan')</script>";
@@ -65,7 +64,7 @@ if(isset($_POST["submit"])){
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Data Teknisi</title>
+    <title>Data Pelanggan</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -103,15 +102,15 @@ if(isset($_POST["submit"])){
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
               <li class="breadcrumb-item text-sm">Pages</li>
-              <li class="breadcrumb-item text-sm text-dark active">Data Teknisi</li>
+              <li class="breadcrumb-item text-sm text-dark active">Data Pelanggan</li>
             </ol>
           </nav>
         </div>
       </nav>
       <div class="mx-2 px-1">
         <div>
-          <h3>Data Teknisi</h3>
-          <p>Daftar teknisi yang bekerja</p>
+          <h3>Data Pelanggan</h3>
+          <p>Daftar pelanggan planet service</p>
         </div>
 
         <!-- FILTER DATA DALAM TABEL -->
@@ -132,9 +131,9 @@ if(isset($_POST["submit"])){
             <form class="d-flex m-1" action="" method="post">
               <select name="sort" id="sort" class="form-select ">
                 <option selected disabled>--pilih--</option>
-                <option value="nama" <?php if(isset($_GET['sort']) && $_GET['sort'] == "nama"){echo "selected";}?>>nama</option>
-                <option value="tgl_lahir" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tgl_lahir"){echo "selected";}?>>tanggal lahir</option>
-                <option value="alamat" <?php if(isset($_GET['sort']) && $_GET['sort'] == "alamat"){echo "selected";}?>>alamat</option>
+                <option value="nama" <?php if(isset($_GET['sort']) && $_GET['sort'] == "nama"){echo "selected";}?>>Nama</option>
+                <option value="no_telp" <?php if(isset($_GET['sort']) && $_GET['sort'] == "no_telp"){echo "selected";}?>>Nomor Telepon</option>
+                <option value="alamat" <?php if(isset($_GET['sort']) && $_GET['sort'] == "alamat"){echo "selected";}?>>Alamat</option>
               </select>
               <select name="flow" id="flow" class="form-select">
                 <option selected disabled>--pilih--</option>
@@ -164,7 +163,7 @@ if(isset($_POST["submit"])){
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Data Teknisi</h1>
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Data Pelanggan</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
@@ -172,11 +171,8 @@ if(isset($_POST["submit"])){
                       <label for="nama" class="form-label">Nama</label>
                       <input type="text" class="form-control" id="nama" name="nama" />
                     
-                      <label for="ttl" class="form-label">Tanggal Lahir</label>
-                      <input type="date" class="form-control" id="ttl" name="ttl" />
-                    
-                      <label for="telp" class="form-label">Nomor Telepon</label>
-                      <input type="text" class="form-control" id="telp" name="telp" />
+                      <label for="no_telp" class="form-label">Nomor Telepon</label>
+                      <input type="text" class="form-control" id="no_telp" name="no_telp" />
                     
                       <label for="alamat" class="form-label">Alamat</label>
                       <input type="text" class="form-control" id="alamat" name="alamat" />
@@ -190,18 +186,16 @@ if(isset($_POST["submit"])){
           </div>
         </div>
         
-        <!-- TABEL TEKNISI -->
+        <!-- TABEL PELANGGAN -->
         <p class="mt-3 mb-0 text-secondary">Total Data : <?php echo $total_row; ?></p>
         <div class="col-12 my-3">
           <table class="table border">
             <thead class="text-center">
               <tr>
-              <th class="text-secondary">NO</th>
+                <th class="text-secondary">NO</th>
                 <th class="text-secondary">NAMA</th>
-                <th class="text-secondary">TANGGAL LAHIR</th>
                 <th class="text-secondary">NO TELEPON</th>
                 <th class="text-secondary">ALAMAT</th>
-                <th class="text-secondary">STATUS</th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -209,16 +203,15 @@ if(isset($_POST["submit"])){
             </thead>
             <tbody>
             <?php $no = 1; ?>
-              <?php foreach($teknisi as $tk) : ?>
+              <?php foreach($pelanggan as $pl) : ?>
               <tr>
                 <td class="text-center mb-0"><?= $no; ?></td>
-                <td class="mb-0"><?= $tk["nama"];?></td>
-                <td class="mb-0"><?= $tk["tgl_lahir"];?></td>
-                <td class="mb-0"><?= $tk["no_telp"];?></td>
-                <td class="mb-0"><?= $tk["alamat"];?></td>
+                <td class="mb-0"><?= $pl["nama"];?></td>
+                <td class="mb-0"><?= $pl["no_telp"];?></td>
+                <td class="mb-0"><?= $pl["alamat"];?></td>
                 <td class="mb-0"></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $tk["id_teknisi"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $tk["id_teknisi"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $tk["id_teknisi"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $pl["id_pelanggan"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $pl["id_pelanggan"];?>"><img src="../pic/edit.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $pl["id_pelanggan"];?>"><img src="../pic/trash.svg" alt=""></a></td>
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>
@@ -230,45 +223,3 @@ if(isset($_POST["submit"])){
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
   </body>
 </html>
-
-        <!-- Button trigger modal -->
-        <!-- <div class="col-md-7">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
-            Tambah Data
-          </button>
-        </div>   -->
-
-        <!-- SEARCH
-        <div class="" style="width:200px;">
-          <div class="input-group">
-            <div class="form-outline" action="" method="post">
-              <input type="search" id="form1" class="form-control" placeholder="Search..." name="search" />
-            </div>
-          </div>            
-        </div> -->
-
-        <!-- SEARCH BAR -->
-        <!-- <div style="width:200px;">
-          <div class="input-group">
-            <form action="" method="get">
-              <input type="search" id="form1" class="form-control" placeholder="Cari..." name="search" />
-            </form>
-          </div>            
-        </div> -->
-
-        <!-- SORT -->
-        <!-- <form action="" method="get">
-          <div class="row" style="width:160px">
-          <div class="col-12 my-3">
-            <div class="input-group">
-              <select name="sort" id="sort" class="form-control">
-                <option selected disabled>--pilih--</option>
-                <option value="nama" <?php if(isset($_GET['sort']) && $_GET['sort'] == "nama"){echo "selected";}?>>nama</option>
-                <option value="tgl_lahir" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tgl_lahir"){echo "selected";}?>>tanggal lahir</option>
-                <option value="alamat" <?php if(isset($_GET['sort']) && $_GET['sort'] == "alamat"){echo "selected";}?>>alamat</option>
-              </select>
-              <button type="submit" class="input-group-text btn btn-secondary" name="submit" >Urut</button>
-            </div>
-          </div>
-          </div>
-        </form> -->

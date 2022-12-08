@@ -17,17 +17,19 @@ include 'function.php';
 
 date_default_timezone_set('Asia/Jakarta');
 // $device = query("SELECT tipe FROM sparepart"); 
-$keluhan = query("SELECT keluhan FROM layanan ORDER BY keluhan ASC"); 
-$sparepart = query("SELECT DISTINCT nama FROM sparepart ORDER BY nama ASC"); 
-$teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC"); 
+$pelanggan = query("SELECT id_pelanggan, no_telp, nama FROM pelanggan ORDER BY nama ASC"); 
+$device = query("SELECT id_device, nama FROM device ORDER BY nama ASC"); 
+$keluhan = query("SELECT id_layanan, keluhan FROM layanan ORDER BY keluhan ASC"); 
+$sparepart = query("SELECT id_sparepart, nama FROM sparepart ORDER BY nama ASC"); 
+$teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC"); 
 
-// if(isset($_POST["submit"])){
-//   if(tambah_servis($_POST) > 0){
-//     header('refresh:0; url=data_produk.php');
-//     echo "<script>alert('data berhasil ditambahkan')</script>";
-//   } else{
-//     echo "<script>alert('data gagal ditambahkan')</script>";
-//   }
+// if(isset($_POST["nama"])){
+  // if(tambah_servis($_POST) > 0){
+  //   header('refresh:0; url=transaksi_baru.php');
+  //   echo "<script>alert('data berhasil ditambahkan')</script>";
+  // } else{
+  //   echo "<script>alert('data gagal ditambahkan')</script>";
+  // }
 // }
 
 ?>
@@ -40,6 +42,7 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
     <title>Transaksi Baru</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
   </head>
   <body>
     <!-- SIDEBARR -->
@@ -50,19 +53,20 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
       </div>
 
       <div class="menu">
-        <div class="list-group mt-5 mx-3">
-          <a href="/src/dashboard.html" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
-          <a href="/src/transaksi_baru.html" class="list-group-item list-group-item-action">Servis Baru</a>
-          <a href="/src/data_transaksi.html" class="list-group-item list-group-item-action">Data Transaksi</a>
-          <a href="/src/data_layanan.html" class="list-group-item list-group-item-action">Data Layanan</a>
-          <a href="/src/data_produk.html" class="list-group-item list-group-item-action">Data Produk</a>
-          <a href="/src/data_teknisi.html" class="list-group-item list-group-item-action">Data Teknisi</a>
+      <div class="list-group mt-5 mx-3">
+          <a href="dashboard.php" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
+          <a href="transaksi_baru.php" class="list-group-item list-group-item-action">Servis Baru</a>
+          <a href="data_transaksi.php" class="list-group-item list-group-item-action">Data Transaksi</a>
+          <a href="data_layanan.php" class="list-group-item list-group-item-action">Data Layanan</a>
+          <a href="data_produk.php" class="list-group-item list-group-item-action">Data Sparepart</a>
+          <a href="data_device.php" class="list-group-item list-group-item-action">Data Device</a>
+          <a href="data_pelanggan.php" class="list-group-item list-group-item-action">Data Pelanggan</a>
+          <a href="data_teknisi.php" class="list-group-item list-group-item-action">Data Teknisi</a>
         </div>
       </div>
       <div class="position-absolute bottom-0 p-5 text-second text-center">
         <form action="" method="post" >
-          <button type="submit" name="logout">Logout</button>
-          <!-- <a href="../src/home.html" class="">Logout</a> -->
+        <button class="btn text-secondary" type="submit" name="logout"><img class="me-1" src="../pic/logout.svg" alt=""> Logout</button>
         </form>
       </div>
     </div>
@@ -74,7 +78,7 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
               <li class="breadcrumb-item text-sm">Pages</li>
-              <li class="breadcrumb-item text-sm text-dark active">Transaksi Baru</li>
+              <li class="breadcrumb-item text-sm text-dark active">Servis Baru</li>
             </ol>
           </nav>
         </div>
@@ -91,16 +95,16 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
             <div class="row mb-3">
             <label for="inputDate" class="col-1 col-form-label text-wrap" style="width: 10rem">Waktu</label>
               <div class="col-12 col-sm-6 col-lg-5">
-                <input type="text" class="form-control" id="date" name="date" disabled value="<?php echo date('l, d-m-Y H:i:s a')?>"/>
+                <input type="text" class="form-control" id="tgl_masuk" name="tgl_masuk" disabled value="<?php echo date('l, d-m-Y H:i:s a')?>"/>
               </div>
             </div>
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <label for="inputPelanggan" class="col-1 col-form-label text-wrap" style="width: 10rem">Nama Pelanggan</label>
               <div class="col-12 col-sm-6 col-lg-5">
                 <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" />
               </div>
-            </div>
-            <div class="row mb-3">
+            </div> -->
+            <!-- <div class="row mb-3">
               <label for="inputTelp" class="col-1 col-form-label text-wrap" style="width: 10rem">Nomor Telepon</label>
               <div class="col-12 col-sm-6 col-lg-5">
                 <input type="text" class="form-control" id="no_telp" name ="no_telp"/>
@@ -117,22 +121,41 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
               <div class="col-12 col-sm-6 col-lg-5">
                 <input type="text" class="form-control" id="nama_device" name="nama_device" />
               </div>
+            </div> -->
+            <div class="row mb-3">
+              <label for="inputPelanggan" class="col-1 col-form-label text-wrap" style="width: 10rem">Nama Pelanggan</label>
+              <div class="col-12 col-sm-6 col-lg-5">
+                <select class="selectpicker form-control" data-live-search="true" name="id_pelanggan" id="floatingSelect" aria-label="Floating label select example" >
+                  <option selected disabled>-</option>
+                  <?php foreach($pelanggan as $pl) : ?>
+                  <option value="<?= $pl["id_pelanggan"];?>"><?= $pl["no_telp"];?> | <?= $pl["nama"];?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="inputDevice" class="col-1 col-form-label text-wrap" style="width: 10rem">Device</label>
+              <div class="col-12 col-sm-6 col-lg-5">
+                <select class="selectpicker form-control" data-live-search="true" name="id_device" id="floatingSelect" aria-label="Floating label select example">
+                  <option selected disabled>-</option>
+                  <?php foreach($device as $dc) : ?>
+                  <option value="<?= $dc["id_device"];?>"><?= $dc["nama"];?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
             </div>
             <div class="row mb-3">
               <label for="inputKeluhan" class="col-1 col-form-label text-wrap" style="width: 10rem">Keluhan</label>
               <div class="col-12 col-sm-6 col-lg-5">
-                <!-- <input type="text" class="form-control" id="keluhan" name="keluhan" /> -->
-                <div class="form-floating">
-                  <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                    <option selected disabled>-</option>
-                    <?php foreach($keluhan as $kl) : ?>
-                    <option value=""><?= $kl["keluhan"];?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
+                <select class="selectpicker form-control" data-live-search="true" name="id_layanan" id="floatingSelect" aria-label="Floating label select example">
+                  <option selected disabled>-</option>
+                  <?php foreach($keluhan as $kl) : ?>
+                  <option value="<?= $kl["id_layanan"];?>"><?= $kl["keluhan"];?></option>
+                  <?php endforeach; ?>
+                </select>
               </div>
             </div>
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <label for="inputTipe" class="col-1 col-form-label text-wrap" style="width: 10rem">Tipe Layanan</label>
               <div class="col-12 col-sm-6 col-lg-5">
                 <div class="form-check">
@@ -144,31 +167,33 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
                   <label class="form-check-label" for="gridRadios2"> Ganti Sparepart </label>
                 </div>
               </div>
-            </div>
+            </div> -->
             <div class="row mb-3">
               <label for="inputSparepart" class="col-1 col-form-label text-wrap" style="width: 10rem">Sparepart</label>
               <div class="col-12 col-sm-6 col-lg-5">
-                <div class="form-floating">
-                  <select class="form-select select-initialized" id="floatingSelect" aria-label="Floating label select example">
-                    <option selected>-</option>
-                    <?php foreach($sparepart as $spr) : ?>
-                    <option value=""><?= $spr["nama"];?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
+                <select class="selectpicker form-control" data-live-search="true" name="id_sparepart" id="floatingSelect" aria-label="Floating label select example">
+                  <option selected>-</option>
+                  <?php foreach($sparepart as $spr) : ?>
+                  <option value="<?= $spr["id_sparepart"];?>"><?= $spr["nama"];?></option>
+                  <?php endforeach; ?>
+                </select> 
               </div>
             </div>
             <div class="row mb-3">
+              <label for="inputJumlahSparepart" class="col-1 col-form-label text-wrap" style="width: 10rem">Jumlah</label>
+              <div class="col-12 col-sm-6 col-lg-5">
+                <input type="text" class="form-control" id="jml_sparepart" name="jml_sparepart">
+              </div>
+           </div>
+            <div class="row mb-3">
               <label for="inputTeknisi" class="col-1 col-form-label text-wrap" style="width: 10rem">Teknisi</label>
               <div class="col-12 col-sm-6 col-lg-5">
-                <div class="form-floating">
-                  <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                    <option selected>-</option>
-                    <?php foreach($teknisi as $tk) : ?>
-                    <option value=""><?= $tk["nama"];?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
+                <select class="selectpicker form-control" data-live-search="true" name="id_teknisi" id="floatingSelect" aria-label="Floating label select example">
+                  <option selected>-</option>
+                  <?php foreach($teknisi as $tk) : ?>
+                  <option value="<?= $tk["id_teknisi"];?>"><?= $tk["id_teknisi"];?> | <?= $tk["nama"];?></option>
+                  <?php endforeach; ?>
+                </select>
               </div>
             </div>
             <button type="submit" class="btn btn-secondary">Simpan</button>
@@ -176,5 +201,8 @@ $teknisi = query("SELECT nama FROM teknisi ORDER BY nama ASC");
         </div>
       </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   </body>
 </html>
