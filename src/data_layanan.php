@@ -65,6 +65,25 @@ if(isset($_POST["submit"])){
     echo "<script>alert('data gagal ditambahkan')</script>";
   }
 }
+
+if(isset($_POST["submitedit"])){
+  if(edit_layanan($_POST) > 0){
+    header('refresh:0; url=data_layanan.php');
+    echo "<script>alert('data berhasil diedit')</script>";
+  } else{
+    echo "<script>alert('data gagal diedit')</script>";
+  }
+}
+
+if(isset($_POST["submithapus"])){
+  if(hapus_layanan($_POST) > 0){
+    header('refresh:0; url=data_layanan.php');
+    echo "<script>alert('data berhasil dihapus')</script>";
+  } else{
+    echo "<script>alert('data gagal dihapus')</script>";
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -221,7 +240,62 @@ if(isset($_POST["submit"])){
                 <td class="mb-0"><?= $ly["keluhan"];?></td>
                 <td class="text-center mb-0"><?= $ly["biaya"];?></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $ly["id_layanan"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $ly["id_layanan"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $ly["id_layanan"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="#hapus<?= $ly["id_layanan"];?>" data-bs-toggle="modal" data-bs-target="#hapus<?= $ly["id_layanan"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+
+                <!-- MODAL EDIT -->
+                <div class="modal fade" id="edit<?= $ly["id_layanan"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header"> 
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Data Layanan</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                        <input type="hidden" class="form-control" id="id_layanan" name="id_layanan" value="<?= $ly["id_layanan"]?>"/>
+                              <label for="tipe" class="form-label">Tipe</label>                             
+                              <select class="form-select" id="tipe" name="tipe" value ="<?= $ly["id_layanan"];?>" placeholder="<?= $ly["id_layanan"];?>">
+                                <option value="1">Jasa</option>
+                                <option value="2">Ganti Sparepart</option>
+                              </select>
+                            
+                              <label for="keluhan" class="form-label">Keluhan</label>
+                              <input type="text" class="form-control" id="keluhan" name="keluhan" value ="<?= $ly["keluhan"];?>" placeholder="<?= $ly["keluhan"];?>"/>
+                            
+                              <label for="biaya" class="form-label">Biaya</label>
+                              <input type="text" class="form-control" id="biaya" name="biaya" value ="<?= $ly["biaya"];?>" placeholder="<?= $ly["biaya"];?>"/>
+                        
+                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- MODAL HAPUS -->
+                <div class="modal fade" id="hapus<?= $ly["id_layanan"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Yakin untuk menghapus data?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                      <form action="" method="post">
+                        <input type="hidden" class="form-control" id="id_layanan" name="id_layanan" value="<?= $ly["id_layanan"];?>"/>
+                        Data yang dihapus tidak bisa dikembalikan
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                          <button type="submit" class="btn btn-primary" name="submithapus">Hapus</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>

@@ -58,6 +58,25 @@ if(isset($_POST["submit"])){
     echo "<script>alert('data gagal ditambahkan')</script>";
   }
 }
+
+if(isset($_POST["submitedit"])){
+  if(edit_teknisi($_POST) > 0){
+    header('refresh:0; url=data_teknisi.php');
+    echo "<script>alert('data berhasil diedit')</script>";
+  } else{
+    echo "<script>alert('data gagal diedit')</script>";
+  }
+}
+
+if(isset($_POST["submithapus"])){
+  if(hapus_teknisi($_POST) > 0){
+    header('refresh:0; url=data_teknisi.php');
+    echo "<script>alert('data berhasil dihapus')</script>";
+  } else{
+    echo "<script>alert('data gagal dihapus')</script>";
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -218,7 +237,62 @@ if(isset($_POST["submit"])){
                 <td class="mb-0"><?= $tk["alamat"];?></td>
                 <td class="mb-0"></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $tk["id_teknisi"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $tk["id_teknisi"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $tk["id_teknisi"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <!-- <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $tk["id_teknisi"];?>"><img src="../pic/trash.svg" alt=""></a></td> -->
+                <td><a class="btn btn-outline-secondary mt-3" href="#hapus<?= $tk["id_teknisi"];?>" data-bs-toggle="modal" data-bs-target="#hapus<?= $tk["id_teknisi"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <!-- MODAL EDIT -->
+                <div class="modal fade" id="edit<?= $tk["id_teknisi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Data Teknisi</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                              <input type="hidden" class="form-control" id="id_teknisi" name="id_teknisi" value="<?= $tk["id_teknisi"];?>"/>
+
+                              <label for="nama" class="form-label">Nama</label>
+                              <input type="text" class="form-control" id="nama" name="nama" placeholder="<?= $tk["nama"];?>" value ="<?= $tk["nama"];?>"/>
+                            
+                              <label for="ttl" class="form-label">Tanggal Lahir</label>
+                              <input type="date" class="form-control" id="ttl" name="ttl" placeholder="<?= $tk["tgl_lahir"];?>" value ="<?= $tk["tgl_lahir"];?>"/>
+                            
+                              <label for="telp" class="form-label">Nomor Telepon</label>
+                              <input type="text" class="form-control" id="telp" name="telp" placeholder="<?= $tk["no_telp"];?>" value ="<?= $tk["no_telp"];?>"/>
+                            
+                              <label for="alamat" class="form-label">Alamat</label>
+                              <input type="text" class="form-control" id="alamat" name="alamat" placeholder="<?= $tk["alamat"];?>" value ="<?= $tk["alamat"];?>"/>
+
+                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- MODAL HAPUS -->
+                <div class="modal fade" id="hapus<?= $tk["id_teknisi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Yakin untuk menghapus data?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                      <form action="" method="post">
+                        <input type="hidden" class="form-control" id="id_teknisi" name="id_teknisi" value="<?= $tk["id_teknisi"];?>"/>
+                        Data yang dihapus tidak bisa dikembalikan
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                          <button type="submit" class="btn btn-primary" name="submithapus">Hapus</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>

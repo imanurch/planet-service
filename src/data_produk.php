@@ -58,6 +58,25 @@ if(isset($_POST["submit"])){
     echo "<script>alert('data gagal ditambahkan')</script>";
   }
 }
+
+if(isset($_POST["submitedit"])){
+  if(edit_sparepart($_POST) > 0){
+    header('refresh:0; url=data_produk.php');
+    echo "<script>alert('data berhasil diedit')</script>";
+  } else{
+    echo "<script>alert('data gagal diedit')</script>";
+  }
+}
+
+if(isset($_POST["submithapus"])){
+  if(hapus_sparepart($_POST) > 0){
+    header('refresh:0; url=data_produk.php');
+    echo "<script>alert('data berhasil dihapus')</script>";
+  } else{
+    echo "<script>alert('data gagal dihapus')</script>";
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -219,71 +238,74 @@ if(isset($_POST["submit"])){
                 <td class="mb-0"><?= $spr["nama"];?></td>
                 <td class="mb-0"><?= $spr["tipe"];?></td>
                 <td class="text-center mb-0"><?= $spr["stok"];?></td>
-                <td class="text-center mb-0"><?= $spr["harga"];?></td>
-                <td>
-                <a href="#edit<?=  $spr["id_sparepart"];?>" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit<?= $spr["id_sparepart"];?>">Edit</a>
-                <!-- <a href="data_produk.php?id=<?= $spr["id_sparepart"];?>">Edit</a> -->
-                <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit<?php $spr["id_sparepart"];?>"> Edit </button> -->
-                </td>
-                <!-- <td>
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <a href="data_produk.php?id=<?= $spr["id_sparepart"];?>">ubah</a>  
-                </button>
-                <ul class="dropdown-menu">
-                  <li><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">Edit</button></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                </ul>
-                </td> -->
-                <!-- <td class="align-middle">
-                  <div class="col-md-7">
-                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit">
-                    <a href="data_produk.php?id=<?= $spr["id_sparepart"];?>">Edit</a>
-                  </button>
-                </td> -->
+                <td class="text-center mb-0"><?= $spr["harga"];?></td>            
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $spr["id_sparepart"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $spr["id_sparepart"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $spr["id_sparepart"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <!-- Modal EDIT TABEL-->
+                <div class="modal fade" id="edit<?= $spr["id_sparepart"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Data Sparepart</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                          <?php
+                          $id = $spr["id_sparepart"];
+                          $update = query("SELECT * FROM sparepart WHERE id_sparepart = '$id'"); 
+                          ?>
+                              <input type="hidden" class="form-control" id="id_sparepart" name="id_sparepart" value="<?= $id?>"/>
+
+                              <label for="nama" class="form-label">Nama</label>
+                              <input type="text" class="form-control" id="nama" name="nama" value="<?= $spr["nama"]?>"/>
+                            
+                              <label for="tipe" class="form-label">Tipe</label>
+                              <input type="text" class="form-control" id="tipe" name="tipe" value="<?= $spr["tipe"]?>" />
+                            
+                              <label for="stok" class="form-label">Stok</label>
+                              <input type="text" class="form-control" id="stok" name="stok" value="<?= $spr["stok"]?>"/>
+                            
+                              <label for="harga" class="form-label">Harga</label>
+                              <input type="text" class="form-control" id="harga" name="harga" value="<?= $spr["harga"]?>"/>
+
+                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <td><a class="btn btn-outline-secondary mt-3" href="#hapus<?= $spr["id_sparepart"];?>" data-bs-toggle="modal" data-bs-target="#hapus<?= $spr["id_sparepart"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <!-- MODAL HAPUS -->
+                <div class="modal fade" id="hapus<?= $spr["id_sparepart"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Yakin untuk menghapus data?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                      <form action="" method="post">
+                        <input type="hidden" class="form-control" id="id_sparepart" name="id_sparepart" value="<?= $spr["id_sparepart"];?>"/>
+                        Data yang dihapus tidak bisa dikembalikan
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                          <button type="submit" class="btn btn-primary" name="submithapus">Hapus</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>
             </tbody>
           </table>
           </div>  
-          <!-- Modal EDIT TABEL-->
-          <div class="modal fade" id="edit<?= $spr["id_sparepart"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Data Sparepart</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form action="" method="post">
-                    <?php
-                    $id = $spr["id_sparepart"];
-                    $update = query("SELECT * FROM sparepart WHERE id_sparepart = '$id'"); 
-                    ?>
-                        <input type="hidden" class="form-control" id="id" name="id" placeholder="<?= $id?>"/>
 
-                        <label for="nama" class="form-label">Nama</label>
-                        <input type="text" class="form-control" id="nama" name="nama" placeholder="<?= $nama?>"/>
-                      
-                        <label for="tipe" class="form-label">Tipe</label>
-                        <input type="text" class="form-control" id="tipe" name="tipe" />
-                      
-                        <label for="stok" class="form-label">Stok</label>
-                        <input type="text" class="form-control" id="stok" name="stok" />
-                      
-                        <label for="harga" class="form-label">Harga</label>
-                        <input type="text" class="form-control" id="harga" name="harga" />
-
-                        <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit" >Submit</button>
-                  </form>
-                </div>
-                <div class="modal-footer">
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -57,6 +57,15 @@ if(isset($_POST["submit"])){
     echo "<script>alert('data gagal ditambahkan')</script>";
   }
 }
+
+if(isset($_POST["submitedit"])){
+  if(edit_device($_POST) > 0){
+    header('refresh:0; url=data_device.php');
+    echo "<script>alert('data berhasil diedit')</script>";
+  } else{
+    echo "<script>alert('data gagal diedit')</script>";
+  }
+}
 ?>
 
 <!DOCTYPE html>
@@ -171,12 +180,6 @@ if(isset($_POST["submit"])){
                       <label for="nama" class="form-label">Nama</label>
                       <input type="text" class="form-control" id="nama" name="nama" />
                     
-                      <!-- <label for="no_telp" class="form-label">Nomor Telepon</label>
-                      <input type="text" class="form-control" id="no_telp" name="no_telp" />
-                    
-                      <label for="alamat" class="form-label">Alamat</label>
-                      <input type="text" class="form-control" id="alamat" name="alamat" /> -->
-
                       <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit" >Submit</button>
                 </form>
               </div>
@@ -205,7 +208,31 @@ if(isset($_POST["submit"])){
                 <td class="text-center mb-0"><?= $no; ?></td>
                 <td class="mb-0"><?= $dv["nama"];?></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $dv["id_device"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $dv["id_device"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $dv["id_device"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $dv["id_device"];?><?= $dv["id_device"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+
+                <!-- Modal -->
+                <div class="modal fade" id="edit<?= $dv["id_device"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Data Device</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                              <input type="hidden" class="form-control" id="id_device" name="id_device" value="<?= $dv["id_device"]?>"/>
+
+                              <label for="nama" class="form-label">Nama</label>
+                              <input type="text" class="form-control" id="nama" name="nama" value="<?= $dv["nama"];?>" placeholder="<?= $dv["nama"];?>" />
+                              
+                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </tr>
               <?php $no++; ?>
               <?php endforeach; ?>

@@ -23,6 +23,9 @@ $keluhan = query("SELECT id_layanan, keluhan FROM layanan ORDER BY keluhan ASC")
 $sparepart = query("SELECT id_sparepart, nama FROM sparepart ORDER BY nama ASC"); 
 $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC"); 
 
+// $kode_transaksi = mysqli_query($conn, "SELECT MAX(id_transaksi) as max_kode from transaksi");
+
+
 // if(isset($_POST["nama"])){
   // if(tambah_servis($_POST) > 0){
   //   header('refresh:0; url=transaksi_baru.php');
@@ -31,6 +34,8 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
   //   echo "<script>alert('data gagal ditambahkan')</script>";
   // }
 // }
+
+
 
 ?>
 
@@ -98,30 +103,6 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
                 <input type="text" class="form-control" id="tgl_masuk" name="tgl_masuk" disabled value="<?php echo date('l, d-m-Y H:i:s a')?>"/>
               </div>
             </div>
-            <!-- <div class="row mb-3">
-              <label for="inputPelanggan" class="col-1 col-form-label text-wrap" style="width: 10rem">Nama Pelanggan</label>
-              <div class="col-12 col-sm-6 col-lg-5">
-                <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" />
-              </div>
-            </div> -->
-            <!-- <div class="row mb-3">
-              <label for="inputTelp" class="col-1 col-form-label text-wrap" style="width: 10rem">Nomor Telepon</label>
-              <div class="col-12 col-sm-6 col-lg-5">
-                <input type="text" class="form-control" id="no_telp" name ="no_telp"/>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <label for="inputAlamat" class="col-1 col-form-label text-wrap" style="width: 10rem">Alamat</label>
-              <div class="col-12 col-sm-6 col-lg-5">
-                <input type="text" class="form-control" id="alamat" name="alamat" />
-              </div>
-            </div>
-            <div class="row mb-3">
-              <label for="inputDevice" class="col-1 col-form-label text-wrap" style="width: 10rem">Device</label>
-              <div class="col-12 col-sm-6 col-lg-5">
-                <input type="text" class="form-control" id="nama_device" name="nama_device" />
-              </div>
-            </div> -->
             <div class="row mb-3">
               <label for="inputPelanggan" class="col-1 col-form-label text-wrap" style="width: 10rem">Nama Pelanggan</label>
               <div class="col-12 col-sm-6 col-lg-5">
@@ -133,7 +114,7 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
                 </select>
               </div>
             </div>
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <label for="inputDevice" class="col-1 col-form-label text-wrap" style="width: 10rem">Device</label>
               <div class="col-12 col-sm-6 col-lg-5">
                 <select class="selectpicker form-control" data-live-search="true" name="id_device" id="floatingSelect" aria-label="Floating label select example">
@@ -154,7 +135,7 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
                   <?php endforeach; ?>
                 </select>
               </div>
-            </div>
+            </div> -->
             <!-- <div class="row mb-3">
               <label for="inputTipe" class="col-1 col-form-label text-wrap" style="width: 10rem">Tipe Layanan</label>
               <div class="col-12 col-sm-6 col-lg-5">
@@ -168,7 +149,7 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
                 </div>
               </div>
             </div> -->
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <label for="inputSparepart" class="col-1 col-form-label text-wrap" style="width: 10rem">Sparepart</label>
               <div class="col-12 col-sm-6 col-lg-5">
                 <select class="selectpicker form-control" data-live-search="true" name="id_sparepart" id="floatingSelect" aria-label="Floating label select example">
@@ -184,7 +165,7 @@ $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC");
               <div class="col-12 col-sm-6 col-lg-5">
                 <input type="text" class="form-control" id="jml_sparepart" name="jml_sparepart">
               </div>
-           </div>
+           </div> -->
             <div class="row mb-3">
               <label for="inputTeknisi" class="col-1 col-form-label text-wrap" style="width: 10rem">Teknisi</label>
               <div class="col-12 col-sm-6 col-lg-5">
