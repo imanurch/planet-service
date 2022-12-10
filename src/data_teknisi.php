@@ -99,7 +99,6 @@ if(isset($_POST["submithapus"])){
       <div class="menu">
       <div class="list-group mt-5 mx-3">
           <a href="dashboard.php" class="list-group-item list-group-item-action" aria-current="true">Dashboard</a>
-          <a href="transaksi_baru.php" class="list-group-item list-group-item-action">Servis Baru</a>
           <a href="data_transaksi.php" class="list-group-item list-group-item-action">Data Transaksi</a>
           <a href="data_layanan.php" class="list-group-item list-group-item-action">Data Layanan</a>
           <a href="data_produk.php" class="list-group-item list-group-item-action">Data Sparepart</a>
