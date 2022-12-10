@@ -14,6 +14,43 @@ if(isset($_POST["logout"])){
 }
 
 include 'function.php';
+// PAGINATION
+    // menyimpan url halaman saat ini dengan fungsi get
+    // misalnya kalian akan melihat ?halaman= 3 pada url di atas, maka 3 akan disimpan ke dalam var halaman
+    $halaman        = isset($_GET['halaman'])?(int)$_GET['halaman'] : 1;
+
+    // jika nilai halaman lebih besar dari 1 maka halaman awal adalah halaman dikali 10 - 10
+    // jika nilai halaman lebih kecil dari 1 maka halaman awal adalah 0
+    $halaman_awal   = ($halaman > 1) ? ($halaman * 10) - 10 : 0;
+
+    // jika kembali dikurangi 1 dan jika setelahnya ditambah 1
+    $sebelum        = $halaman - 1;
+    $setelah        = $halaman + 1;
+
+    // mengambil data dari tabel pegawai untuk ditotal
+    // $datas           = mysqli_query($koneksi, "select * from pegawai");
+    $total_layanan = mysqli_query($conn, "SELECT * FROM layanan");
+
+    // jumlah data pegawai ditotal
+    // $total_row    = mysqli_num_rows($datas);
+    $total_row = mysqli_num_rows($total_layanan);
+    
+    // ceil adalah fungsi pembulatan pada php
+    $total_halaman  = ceil($total_row / 10);
+
+    // yang ini mengambil data pengawai untuk ditampilkan dengan fungsi limit
+    // satu halaman akan ditampilkan paling banyak 10 atau limit 10
+    // $data_pegawais   = mysqli_query($koneksi, "select * from pegawai limit $halaman_awal, 10");
+
+    // nomor digunakan untuk penomoran pada kolom no
+    // karena index dimulai dari angka 0 maka perlu ditambah 1
+    $nomor          = $halaman_awal + 1;
+
+    //melakukan looping data
+    // while($data = mysqli_fetch_array($data_pegawais)){
+
+
+
 
 $total_layanan = mysqli_query($conn, "SELECT * FROM layanan");
 $total_row = mysqli_num_rows($total_layanan);
@@ -49,12 +86,12 @@ if(isset($_POST["submitsearch"])){
                       OR biaya LIKE '%$search%'
                       ORDER BY $field $flow LIMIT $max");
 } else{
-  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $max"); 
+  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $halaman_awal, 10"); 
 }
 
 if(isset($_POST["reset"])){
   $reset = $_POST["reset"];
-  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT 10");
+  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT  $halaman_awal, 10");
 }
 
 if(isset($_POST["submit"])){
@@ -84,6 +121,10 @@ if(isset($_POST["submithapus"])){
   }
 }
 
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -94,6 +135,8 @@ if(isset($_POST["submithapus"])){
     <title>Data Layanan</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   </head>
   <body>
     <!-- SIDEBARR -->
@@ -305,12 +348,51 @@ if(isset($_POST["submithapus"])){
           <button class="btn btn-secondary"><img src="../pic/chevron-left.svg" alt=""></button>
           <button class="btn btn-secondary"><img src="../pic/chevron-right.svg" alt=""></button>
         </div>
-        
+
+        <!-- <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav> -->
+        <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" <?php if($halaman > 1){ echo "href='?halaman=$sebelum'"; } ?>>Previous</a>
+                    </li>
+                    <?php 
+                        for($x = 1; $x <= $total_halaman; $x++){
+                    ?> 
+                    <li class="page-item"><a class="page-link" href="?halaman=<?php echo $x ?>"> <?php echo $x; ?></a></li>
+                    <?php
+                        }
+                    ?> 
+                    <li class="page-item">
+                        <a  class="page-link" <?php  if($halaman < $total_halaman) { echo "href='?halaman=$setelah'"; } ?>>Next</a>
+                    </li>
+                </ul>
+            </nav>
       </div>
     </div>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
   </body>
 </html>
+
+
+
+
+
 
         <!-- SEARCH BAR -->
         <!-- <div style="width:200px;">

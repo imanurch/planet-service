@@ -17,7 +17,7 @@ include 'function.php';
 date_default_timezone_set('Asia/Jakarta');
 $pelanggan = query("SELECT id_pelanggan, no_telp, nama FROM pelanggan ORDER BY nama ASC"); 
 $device = query("SELECT id_device, nama FROM device ORDER BY nama ASC"); 
-$keluhan = query("SELECT id_layanan, keluhan FROM layanan ORDER BY keluhan ASC"); 
+$layanan = query("SELECT id_layanan, keluhan FROM layanan ORDER BY keluhan ASC"); 
 $sparepart = query("SELECT * FROM sparepart ORDER BY nama ASC"); 
 $teknisi = query("SELECT id_teknisi, nama FROM teknisi ORDER BY nama ASC"); 
 
@@ -60,14 +60,14 @@ if(isset($_GET["search"])){
                           OR p.nama LIKE '%$search%' 
                           ORDER BY $field ASC");
 } else{
-  $data_transaksi = query("SELECT tr.id_transaksi, tr.tgl_transaksi, t.nama, p.nama, tr.total_biaya, tr.status
+  $data_transaksi = query("SELECT tr.id_transaksi, tr.tgl_transaksi, t.nama as nama_tk, p.nama as nama_p, tr.total_biaya, tr.status
                      FROM transaksi tr JOIN pelanggan p ON tr.id_pelanggan = p.id_pelanggan JOIN teknisi t ON tr.id_teknisi = t.id_teknisi       
                      ORDER BY $field ASC "); 
 }
 
 if(isset($_POST["reset"])){
   $reset = $_POST["reset"];
-  $data_transaksi = query("SELECT tr.id_transaksi as id, tr.tgl_transaksi, t.nama, p.nama, tr.total_biaya, tr.status
+  $data_transaksi = query("SELECT tr.id_transaksi as id, tr.tgl_transaksi, t.nama as nama_tk, p.nama as nama_p, tr.total_biaya, tr.status
                           FROM transaksi tr JOIN pelanggan p ON tr.id_pelanggan = p.id_pelanggan JOIN teknisi t ON tr.id_teknisi = t.id_teknisi       
                           ORDER BY tr.id_transaksi ASC "); 
 }
@@ -93,11 +93,21 @@ if(isset($_POST["submitedit"])){
 if(isset($_POST["submit_detail_transaksi"])){
   if(tambah_detail_transaksi($_POST) > 0){
     header('refresh:0; url=data_transaksi.php');
-    echo "<script>alert('data berhasil diedit')</script>";
+    echo "<script>alert('data berhasil ditambah')</script>";
   } else{
-    echo "<script>alert('data gagal diedit')</script>";
+    echo "<script>alert('data gagal ditambah')</script>";
   }
 }
+
+if(isset($_POST["submithapus"])){
+  if(hapus_transaksi($_POST) > 0){
+    header('refresh:0; url=data_transaksi.php');
+    echo "<script>alert('data berhasil dihapus')</script>";
+  } else{
+    echo "<script>alert('data gagal dihapus')</script>";
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -108,6 +118,15 @@ if(isset($_POST["submit_detail_transaksi"])){
     <title>Data Transaksi</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
+    <!-- Latest compiled and minified CSS -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css"> -->
+
+    <!-- Latest compiled and minified JavaScript -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script> -->
+
+    <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-*.min.js"></script> -->
   </head>
   <body>
     <!-- SIDEBARR -->
@@ -266,15 +285,136 @@ if(isset($_POST["submit_detail_transaksi"])){
                 <td class="text-center mb-0"><?= $no; ?></td>
                 <td class="mb-0"><?= $tr["id_transaksi"];?></td>
                 <td class="mb-0"><?= $tr["tgl_transaksi"];?></td>
-                <td class="mb-0"><?= $tr["nama"];?></td>
-                <td class="mb-0"><?= $tr["nama"];?></td>
+                <td class="mb-0"><?= $tr["nama_tk"];?></td>
+                <td class="mb-0"><?= $tr["nama_p"];?></td>
                 <td class="mb-0"><?= $tr["total_biaya"];?></td>
                 <td class="mb-0"><?= $tr["status"];?></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $tr["id_transaksi"];?>"><img src="../pic/edit.svg" alt=""></a></td>
+                <td><a class="btn btn-outline-secondary mt-3" href="#hapus<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#hapus<?= $tr["id_transaksi"];?>"><img src="../pic/trash.svg" alt=""></a></td>
                 
+                 <!-- MODAL EDIT -->
+                 <div class="modal fade" id="edit<?= $tr["id_transaksi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit Data Transaksi</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                              <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"];?>"/>
+
+                              <label for="tgl_transaksi" class="form-label">Tanggal Transaksi</label>
+                              <input type="text" class="form-control" id="tgl_transaksi" name="tgl_transaksi" placeholder="<?= $tr["tgl_transaksi"];?>" value ="<?= $tr["tgl_transaksi"];?>"/>
+                            
+                              <label for="id_teknisi" class="form-label">Nama Teknisi</label>
+                              <!-- <input type="text" class="form-control" id="id_teknisi" name="id_teknisi" placeholder="<?= $tr["nama_tk"];?>" value ="<?= $tr["nama_tk"];?>"/> -->
+                              <select class="selectpicker form-control" data-live-search="true" name="id_teknisi" id="floatingSelect" aria-label="Floating label select example">
+                                <option value ="<?= $tr["nama_tk"];?>" disabled selected><?= $tk["id_teknisi"];?> | <?= $tr["nama_tk"];?></option>
+                                <?php foreach($teknisi as $tk) : ?>
+                                <option value="<?= $tk["id_teknisi"];?>"><?= $tk["id_teknisi"];?> | <?= $tk["nama"];?></option>
+                                <?php endforeach; ?>
+                              </select>
+
+                              <label for="id_pelanggan" class="form-label">Nama Pelanggan</label>
+                              <!-- <input type="text" class="form-control" id="id_pelanggan" name="id_pelanggan" placeholder="<?= $tr["nama_p"];?>" value ="<?= $tr["nama_p"];?>"/> -->
+                              <select class="selectpicker form-control" data-live-search="true" name="id_pelanggan" id="floatingSelect" aria-label="Floating label select example"  >
+                                <option value ="<?= $tr["nama_p"];?>" disabled selected><?= $pl["no_telp"];?> | <?= $tr["nama_p"];?></option>
+                                <?php foreach($pelanggan as $pl) : ?>
+                                <option value="<?= $pl["id_pelanggan"];?>"><?= $pl["no_telp"];?> | <?= $pl["nama"];?></option>
+                                <?php endforeach; ?>
+                              </select> 
+
+                              <label for="total_biaya" class="form-label">Total Biaya</label>
+                              <input disabled type="text" class="form-control" id="total_biaya" name="total_biaya" placeholder="<?= $tr["total_biaya"];?>" value ="<?= $tr["total_biaya"];?>"/>
+
+                              <label for="status" class="form-label">Status</label>
+                              <input type="text" class="form-control" id="status" name="status" placeholder="<?= $tr["status"];?>" value ="<?= $tr["status"];?>"/>
+
+                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                      </div>
+                    </div>
+                  </div>
+                 </div>
+                <!-- MODAL HAPUS -->
+                <div class="modal fade" id="hapus<?= $tr["id_transaksi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Yakin untuk menghapus data?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                      <form action="" method="post">
+                        <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"];?>"/>
+                        Data yang dihapus tidak bisa dikembalikan
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                          <button type="submit" class="btn btn-primary" name="submithapus">Hapus</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BAGIAN DETAIL TRANSAKSI -->
                 <td><a class="btn btn-outline-secondary mt-3" href="#detail<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#detail<?= $tr["id_transaksi"];?>">Detail</a></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#tambah_detail<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#tambah_detail<?= $tr["id_transaksi"];?>">Tambah Detail</a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $tr["id_transaksi"];?>"><img src="../pic/edit.svg" alt=""></a></td>
-                <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $tr["id_transaksi"];?>"><img src="../pic/trash.svg" alt=""></a></td>
+                
+                <!-- MODAL TAMBAH DETAIL -->
+                <div class="modal fade" id="tambah_detail<?= $tr["id_transaksi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Detail</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="" method="post">
+                          <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"]?>"/>
+
+                          <label for="id_device" class="form-label">device</label>
+                          <select class="form-control" data-live-search="true" name="id_device" id="floatingSelect" aria-label="Floating label select example">
+                            <option selected>-</option>
+                            <?php foreach($device as $dv) : ?>
+                            <option value="<?= $dv["id_device"];?>"><?= $dv["nama"];?></option>
+                            <?php endforeach; ?>
+                          </select>
+                            
+                          <label for="id_layanan" class="form-label">Keluhan</label>
+                          <!-- <input type="text" class="form-control" id="id_layanan" name="id_layanan"/> -->
+                          <select class="form-control" data-live-search="true" name="id_layanan" id="id_layanan" aria-label="Floating label select example">
+                            <option selected disabled>-</option>
+                            <?php foreach($layanan as $kl) : ?>
+                            <option value="<?= $kl["id_layanan"];?>"><?= $kl["keluhan"];?></option>
+                            <?php endforeach; ?>
+                          </select>
+                            
+                          <label for="id_sparepart" class="form-label">Sparepart</label>
+                          <select class="form-control" data-live-search="true" name="id_sparepart" id="floatingSelect" aria-label="Floating label select example">
+                            <option selected>-</option>
+                            <?php foreach($sparepart as $spr) : ?>
+                            <option value="<?= $spr["id_sparepart"];?>"><?= $spr["nama"];?> | <?= $spr["tipe"];?></option>
+                            <?php endforeach; ?>
+                          </select> 
+                          <!-- <input type="text" class="form-control" id="id_sparepart" name="id_sparepart" /> -->
+
+                          <label for="jml_sparepart" class="form-label">Jumlah Sparepart</label>
+                          <input type="text" class="form-control" id="jml_sparepart" name="jml_sparepart" />
+
+                          <!-- <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"]?>"/> -->
+                          <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit_detail_transaksi" >Submit</button>
+                        </form>
+                      </div>
+                      <div class="modal-footer">                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <!-- MODAL DETAIL -->
                 <div class="modal fade" id="detail<?= $tr["id_transaksi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -319,61 +459,7 @@ if(isset($_POST["submit_detail_transaksi"])){
                   </div>
                 </div>
 
-                <!-- MODAL TAMBAH DETAIL -->
-                <div class="modal fade" id="tambah_detail<?= $tr["id_transaksi"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Tambah Detail</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <form action="" method="post">
-                              <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"]?>"/>
-
-                              <label for="id_device" class="form-label">Device</label>
-                              <!-- <input type="text" class="form-control" id="id_device" name="id_device" /> -->
-                              <select class="selectpicker form-control" data-live-search="true" name="id_device" id="floatingSelect" aria-label="Floating label select example">
-                                <option selected disabled>-</option>
-                                <?php foreach($device as $dc) : ?>
-                                <option value="<?= $dc["id_device"];?>"><?= $dc["nama"];?></option>
-                                <?php endforeach; ?>
-                              </select>
-                            
-                              <label for="id_layanan" class="form-label">Keluhan</label>
-                              <!-- <input type="text" class="form-control" id="id_layanan" name="id_layanan"/> -->
-                              <select class="selectpicker form-control" data-live-search="true" name="id_layanan" id="floatingSelect" aria-label="Floating label select example">
-                                <option selected disabled>-</option>
-                                <?php foreach($keluhan as $kl) : ?>
-                                <option value="<?= $kl["id_layanan"];?>"><?= $kl["keluhan"];?></option>
-                                <?php endforeach; ?>
-                              </select>
-                            
-                              <label for="id_sparepart" class="form-label">Sparepart</label>
-                              <select class="selectpicker form-control" data-live-search="true" name="id_sparepart" id="floatingSelect" aria-label="Floating label select example">
-                                <option selected>-</option>
-                                <?php foreach($sparepart as $spr) : ?>
-                                <option value="<?= $spr["id_sparepart"];?>"><?= $spr["nama"];?> | <?= $spr["tipe"];?></option>
-                                <?php endforeach; ?>
-                              </select> 
-                              <!-- <input type="text" class="form-control" id="id_sparepart" name="id_sparepart" /> -->
-
-                              <label for="jml_sparepart" class="form-label">Jumlah Sparepart</label>
-                              <input type="text" class="form-control" id="jml_sparepart" name="jml_sparepart" />
-
-                              <!-- <input type="hidden" class="form-control" id="id_transaksi" name="id_transaksi" value="<?= $tr["id_transaksi"]?>"/> -->
-                              <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit_detail_transaksi" >Submit</button>
-                        </form>
-                      </div>
-                      <div class="modal-footer">
-                        <!-- <form action="" method="post">
-                            <a class="btn btn-outline-secondary mt-3" href="#detail<?= $tr["id_transaksi"];?>" data-bs-toggle="modal" data-bs-target="#detail<?= $tr["id_transaksi"];?>">Detail</a></td>
-                        </form> -->
-                        
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                
 
               </tr>
               <?php $no++; ?>
@@ -423,5 +509,8 @@ if(isset($_POST["submit_detail_transaksi"])){
       </div>
     </div>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   </body>
 </html>

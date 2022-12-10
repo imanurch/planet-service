@@ -15,6 +15,7 @@ if(isset($_POST["logout"])){
 
 include 'function.php';
 
+$device = query("SELECT id_device, nama FROM device ORDER BY nama ASC"); 
 $total_layanan = mysqli_query($conn, "SELECT * FROM sparepart");
 $total_row = mysqli_num_rows($total_layanan);
 
@@ -87,6 +88,7 @@ if(isset($_POST["submithapus"])){
     <title>Data Produk</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
   </head>
   <body>
     <!-- SIDEBARR -->
@@ -192,7 +194,14 @@ if(isset($_POST["submithapus"])){
                       <input type="text" class="form-control" id="nama" name="nama" />
                     
                       <label for="tipe" class="form-label">Tipe</label>
-                      <input type="text" class="form-control" id="tipe" name="tipe" />
+                      <!-- <input type="text" class="form-control" id="tipe" name="tipe" /> -->
+                      <select class="selectpicker form-control" data-live-search="true" name="tipe" id="floatingSelect" aria-label="Floating label select example">
+                        <option selected disabled>-</option>
+                        <?php foreach($device as $dc) : ?>
+                        <option value="<?= $dc["nama"];?>"><?= $dc["nama"];?></option>
+                        <?php endforeach; ?>
+                      </select>
+                            
                     
                       <label for="stok" class="form-label">Stok</label>
                       <input type="text" class="form-control" id="stok" name="stok" />
@@ -239,6 +248,7 @@ if(isset($_POST["submithapus"])){
                 <td class="text-center mb-0"><?= $spr["stok"];?></td>
                 <td class="text-center mb-0"><?= $spr["harga"];?></td>            
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $spr["id_sparepart"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $spr["id_sparepart"];?>"><img src="../pic/edit.svg" alt=""></a></td>
+                
                 <!-- Modal EDIT TABEL-->
                 <div class="modal fade" id="edit<?= $spr["id_sparepart"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -259,8 +269,14 @@ if(isset($_POST["submithapus"])){
                               <input type="text" class="form-control" id="nama" name="nama" value="<?= $spr["nama"]?>"/>
                             
                               <label for="tipe" class="form-label">Tipe</label>
-                              <input type="text" class="form-control" id="tipe" name="tipe" value="<?= $spr["tipe"]?>" />
-                            
+                              <!-- <input type="text" class="form-control" id="tipe" name="tipe" value="<?= $spr["tipe"]?>" /> -->
+                              <select class="selectpicker form-control" data-live-search="true" name="tipe" id="floatingSelect" aria-label="Floating label select example">
+                                <option value="<?= $spr["tipe"]?>" selected disabled><?= $spr["tipe"]?></option>
+                                <?php foreach($device as $dc) : ?>
+                                <option value="<?= $dc["nama"];?>"><?= $dc["nama"];?></option>
+                                <?php endforeach; ?>
+                              </select>
+
                               <label for="stok" class="form-label">Stok</label>
                               <input type="text" class="form-control" id="stok" name="stok" value="<?= $spr["stok"]?>"/>
                             
@@ -309,6 +325,9 @@ if(isset($_POST["submithapus"])){
       </div>
     </div>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   </body>
 </html>
 

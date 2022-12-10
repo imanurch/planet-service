@@ -21,6 +21,7 @@ function hapus($id){
     return mysqli_affected_rows($conn);
 }
 
+// FUNCTION TRANSAKSI
 function tambah_transaksi($data){
     global $conn;
     // $id_transaksi = getLastID($conn, 'transaksi', 'id_transaksi');
@@ -44,6 +45,32 @@ function tambah_transaksi($data){
     return mysqli_affected_rows($conn);
 }
 
+// function edit_transaksi($data){
+//     global $conn;
+
+//     $id_transaksi = $data["id_transaksi"];
+//     $tgl_transaksi = $data["tgl_transaksi"];
+//     $id_teknisi = $data["id_teknisi"];
+//     $id_pelanggan = $data["id_pelanggan"];
+//     $total_biaya = $data["total_biaya"];
+//     $status = $data["status"];
+
+//     $query = "UPDATE transaksi
+//                 SET
+//                 nama='$nama',tipe='$tipe',stok='$stok',harga='$harga'
+//                 WHERE id_transaksi = '$id_transaksi'";
+
+//     mysqli_query($conn,$query);
+//     return mysqli_affected_rows($conn);
+// }
+
+function hapus_transaksi($data){
+    global $conn;
+    $id_transaksi = $data["id_transaksi"];
+    mysqli_query($conn, "DELETE FROM transaksi WHERE id_transaksi = $id_transaksi");
+    return mysqli_affected_rows($conn);
+}
+
 function getTotalBiaya($id_transaksi, $id_sparepart, $id_layanan){
     return query("SELECT (ly.biaya+(spr.harga*dt.jumlah_sparepart)) AS tb
     FROM detail_transaksi dt 
@@ -56,6 +83,16 @@ function getTotalBiaya($id_transaksi, $id_sparepart, $id_layanan){
     // return $biaya_tambahan;
   }
 
+//   FUNCTION tambah_detail_transaksi($data){
+//     global $conn;
+//     $id_transaksi = $data['id_transaksi'];
+//     $id_device = $data['id_device'];
+//     $id_layanan = $data['id_layanan'];
+//     $id_sparepart = $data['id_sparepart'];
+//     $jml_sparepart = $data['jml_sparepart'];
+//   }
+
+// FUNCTION DETAIL TRANSAKSI
 function tambah_detail_transaksi($data){
     global $conn;
     $id_transaksi = $data["id_transaksi"];
@@ -71,25 +108,27 @@ function tambah_detail_transaksi($data){
 //     $total_biaya = $ba['total_biaya'] + $bt['tb'];
 //     endforeach;
 // endforeach;
-    // $query = "INSERT INTO detail_transaksi
-    //             VALUES
-    //             ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')";
+    $query = "INSERT INTO detail_transaksi
+                VALUES
+                ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')";
 
-    // $query_tr = "UPDATE transaksi
-    //             SET 
-    //             total_biaya='$total_biaya'
-    //             WHERE id_transaksi = '$id_transaksi'";
+    $query_tr = "UPDATE transaksi
+                SET 
+                total_biaya='$total_biaya'
+                WHERE id_transaksi = '$id_transaksi'";
                 
     
-    // mysqli_query($conn,$query);
-    mysqli_query($conn,"INSERT INTO detail_transaksi
-    VALUES
-    ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')");
-    // mysqli_query($conn,$query_tr);
-    mysqli_query($conn,"UPDATE transaksi
-    SET 
-    total_biaya='$total_biaya'
-    WHERE id_transaksi = '$id_transaksi'");
+    mysqli_query($conn,$query);
+    mysqli_query($conn,$query_tr);
+    
+    // mysqli_query($conn,"INSERT INTO detail_transaksi
+    // VALUES
+    // ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')");
+    // // mysqli_query($conn,$query_tr);
+    // mysqli_query($conn,"UPDATE transaksi
+    // SET 
+    // total_biaya='$total_biaya'
+    // WHERE id_transaksi = '$id_transaksi'");
 }
 
 // FUNCTION SPAREPART

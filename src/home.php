@@ -24,7 +24,7 @@ if(isset($_SESSION["Login"])){
     </div>
 
     <div>
-      <button type="submit" class="btn bg-secondary px-4" style="border-radius: 6rem"><a href="../src/login.php">LOGIN</a></button>
+      <button type="submit" class="btn bg-secondary px-4 text-primary" style="border-radius: 6rem"><a href="../src/login.php">LOGIN</a></button>
     </div>
   </body>
 </html>
