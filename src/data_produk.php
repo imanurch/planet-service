@@ -46,6 +46,7 @@ if(isset($_POST["submitsearch"])){
                       OR tipe LIKE '%$search%'
                       OR stok LIKE '%$search%'
                       OR harga LIKE '%$search%' 
+                      OR laba LIKE '%$search%' 
                       ORDER BY $field $flow LIMIT $max");
 } else{
   $sparepart = query("SELECT * FROM sparepart ORDER BY $field $flow LIMIT $max"); 
@@ -156,6 +157,7 @@ if(isset($_POST["submithapus"])){
                 <option value="tipe" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe"){echo "selected";}?>>tipe</option>
                 <option value="stok" <?php if(isset($_GET['sort']) && $_GET['sort'] == "stok"){echo "selected";}?>>stok</option>
                 <option value="harga" <?php if(isset($_GET['sort']) && $_GET['sort'] == "harga"){echo "selected";}?>>harga</option>
+                <option value="laba" <?php if(isset($_GET['sort']) && $_GET['sort'] == "laba"){echo "selected";}?>>laba</option>
               </select>
               <select name="flow" id="flow" class="form-select">
                 <option selected disabled>--pilih--</option>
@@ -201,7 +203,6 @@ if(isset($_POST["submithapus"])){
                         <option value="<?= $dc["nama"];?>"><?= $dc["nama"];?></option>
                         <?php endforeach; ?>
                       </select>
-                            
                     
                       <label for="stok" class="form-label">Stok</label>
                       <input type="text" class="form-control" id="stok" name="stok" />
@@ -209,6 +210,8 @@ if(isset($_POST["submithapus"])){
                       <label for="harga" class="form-label">Harga</label>
                       <input type="text" class="form-control" id="harga" name="harga" />
 
+                      <label for="laba" class="form-label">Laba(%)</label>
+                      <input type="text" class="form-control" id="laba" name="laba" />
                       
                       <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit" >Submit</button>
                 </form>
@@ -232,6 +235,7 @@ if(isset($_POST["submithapus"])){
                 <th class="text-secondary">TIPE</th>
                 <th class="text-secondary">STOK</th>
                 <th class="text-secondary">HARGA</th>
+                <th class="text-secondary">LABA(%)</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -247,6 +251,7 @@ if(isset($_POST["submithapus"])){
                 <td class="mb-0"><?= $spr["tipe"];?></td>
                 <td class="text-center mb-0"><?= $spr["stok"];?></td>
                 <td class="text-center mb-0"><?= $spr["harga"];?></td>            
+                <td class="text-center mb-0"><?= $spr["laba"];?></td>            
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $spr["id_sparepart"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $spr["id_sparepart"];?>"><img src="../pic/edit.svg" alt=""></a></td>
                 
                 <!-- Modal EDIT TABEL-->
@@ -282,6 +287,9 @@ if(isset($_POST["submithapus"])){
                             
                               <label for="harga" class="form-label">Harga</label>
                               <input type="text" class="form-control" id="harga" name="harga" value="<?= $spr["harga"]?>"/>
+
+                              <label for="laba" class="form-label">Laba(%)</label>
+                              <input type="text" class="form-control" id="laba" name="laba" value="<?= $spr["laba"]?>"/>
 
                               <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
                         </form>
@@ -330,44 +338,3 @@ if(isset($_POST["submithapus"])){
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   </body>
 </html>
-
-        <!-- BUTTON MODAL INSERT -->
-        <!-- <div class="col-md-7">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
-            Tambah Data
-          </button>
-        </div>   -->
-
-        <!-- SEARCH BAR -->
-        <!-- <div style="width:200px;">
-          <div class="input-group">
-            <form action="" method="get">
-              <input type="search" id="form1" class="form-control" placeholder="Cari..." name="search" />
-            </form>
-          </div>            
-        </div> -->
-      
-        <!-- SORT -->
-        <!-- <form action="" method="get">
-          <div class="row" style="width:160px">
-          <div class="col-12 my-3">
-            <div class="input-group">
-              <select name="sort" id="sort" class="form-control">
-                <option selected disabled>--pilih--</option>
-                <option value="nama" <?php if(isset($_GET['sort']) && $_GET['sort'] == "nama"){echo "selected";}?>>nama</option>
-                <option value="tipe" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe"){echo "selected";}?>>tipe</option>
-                <option value="stok" <?php if(isset($_GET['sort']) && $_GET['sort'] == "stok"){echo "selected";}?>>stok</option>
-                <option value="harga" <?php if(isset($_GET['sort']) && $_GET['sort'] == "harga"){echo "selected";}?>>harga</option>
-              </select>
-              <button type="submit" class="input-group-text btn btn-secondary" name="submit" >Urut</button>
-            </div>
-          </div>
-          </div>
-        </form> -->
-
-        <!-- RESET FILTER -->
-        <!-- <form action="" method="post">
-          <button class="input-group-text btn btn-secondary" style="" id="reset" name="reset">
-            Reset filter
-          </button>
-        </form> -->

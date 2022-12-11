@@ -209,7 +209,7 @@ if(isset($_POST["submitedit"])){
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $dv["id_device"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $dv["id_device"];?>"><img src="../pic/edit.svg" alt=""></a></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="hapus.php?id=<?= $dv["id_device"];?><?= $dv["id_device"];?>"><img src="../pic/trash.svg" alt=""></a></td>
 
-                <!-- Modal -->
+                <!-- Modal edit -->
                 <div class="modal fade" id="edit<?= $dv["id_device"];?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">

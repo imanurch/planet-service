@@ -24,45 +24,35 @@ function hapus($id){
 // FUNCTION TRANSAKSI
 function tambah_transaksi($data){
     global $conn;
-    // $id_transaksi = getLastID($conn, 'transaksi', 'id_transaksi');
     $tgl_transaksi = $data["tgl_transaksi"];
     $id_teknisi = $data["id_teknisi"];
     $id_pelanggan = $data["id_pelanggan"];
-    // $id_device = $data["id_device"];
-    // $id_layanan = $data["id_layanan"];
-    // $id_sparepart = $data["id_sparepart"];
-    // $jml_sparepart = $data["jml_sparepart"];
 
     $query = "INSERT INTO transaksi
                 VALUES
                 ('','$tgl_transaksi','$id_teknisi', '$id_pelanggan', '','')";
     
-    // $query = "INSERT INTO detail_servis
-    //             VALUES
-    //             ('$id_servis','$id_device','$id_layanan','$id_sparepart','$jml_sparepart','$biaya_sparepart')";
-
     mysqli_query($conn,$query);
     return mysqli_affected_rows($conn);
 }
 
-// function edit_transaksi($data){
-//     global $conn;
+function edit_transaksi($data){
+    global $conn;
 
-//     $id_transaksi = $data["id_transaksi"];
-//     $tgl_transaksi = $data["tgl_transaksi"];
-//     $id_teknisi = $data["id_teknisi"];
-//     $id_pelanggan = $data["id_pelanggan"];
-//     $total_biaya = $data["total_biaya"];
-//     $status = $data["status"];
+    $id_transaksi = $data["id_transaksi"];
+    $id_teknisi = $data["id_teknisi"];
+    $id_pelanggan = $data["id_pelanggan"];
+    $total_biaya = $data["total_biaya"];
+    $status = $data["status"];
 
-//     $query = "UPDATE transaksi
-//                 SET
-//                 nama='$nama',tipe='$tipe',stok='$stok',harga='$harga'
-//                 WHERE id_transaksi = '$id_transaksi'";
+    $query = "UPDATE transaksi
+                SET
+                id_teknisi='$id_teknisi',id_pelanggan='$id_pelanggan',status='$status'
+                WHERE id_transaksi = '$id_transaksi'";
 
-//     mysqli_query($conn,$query);
-//     return mysqli_affected_rows($conn);
-// }
+    mysqli_query($conn,$query);
+    return mysqli_affected_rows($conn);
+}
 
 function hapus_transaksi($data){
     global $conn;
@@ -74,23 +64,12 @@ function hapus_transaksi($data){
 function getTotalBiaya($id_transaksi, $id_sparepart, $id_layanan){
     return query("SELECT (ly.biaya+(spr.harga*dt.jumlah_sparepart)) AS tb
     FROM detail_transaksi dt 
-    JOIN sparepart spr USING (id_sparepart) 
-    JOIN layanan ly USING (id_layanan)
-    WHERE dt.id_transaksi= '$id_transaksi' 
+    JOIN sparepart spr  
+    JOIN layanan ly
+    WHERE dt.id_transaksi= '$id_transaksi'
     AND ly.id_layanan='$id_layanan' 
     AND spr.id_sparepart = '$id_sparepart'");
-
-    // return $biaya_tambahan;
   }
-
-//   FUNCTION tambah_detail_transaksi($data){
-//     global $conn;
-//     $id_transaksi = $data['id_transaksi'];
-//     $id_device = $data['id_device'];
-//     $id_layanan = $data['id_layanan'];
-//     $id_sparepart = $data['id_sparepart'];
-//     $jml_sparepart = $data['jml_sparepart'];
-//   }
 
 // FUNCTION DETAIL TRANSAKSI
 function tambah_detail_transaksi($data){
@@ -101,16 +80,30 @@ function tambah_detail_transaksi($data){
     $id_sparepart = $data["id_sparepart"];
     $jml_sparepart = $data["jml_sparepart"];
     $biaya_awal = query("SELECT total_biaya FROM transaksi WHERE id_transaksi='$id_transaksi'");
-    $biaya_tambahan = getTotalBiaya($id_transaksi, $id_sparepart, $id_layanan);
-    $total_biaya = $biaya_awal + $biaya_tambahan;
-//     foreach ($biaya_awal AS $ba) :
-//         foreach ($biaya_tambahan AS $bt) :
-//     $total_biaya = $ba['total_biaya'] + $bt['tb'];
-//     endforeach;
-// endforeach;
-    $query = "INSERT INTO detail_transaksi
+    $biaya_layanan = query("SELECT biaya FROM layanan WHERE id_layanan='$id_layanan'");
+    $harga_sparepart = query("SELECT harga FROM sparepart WHERE id_sparepart='$id_sparepart'");
+    // print_r($biaya_layanan);
+    $total_biaya=0;
+    if ($harga_sparepart) {
+        $total_biaya = $biaya_layanan[0]['biaya']+$harga_sparepart[0]['harga']*$jml_sparepart;
+    }else{
+        $total_biaya = $biaya_layanan[0]['biaya'];
+    }
+    $total_biaya = $biaya_awal[0]['total_biaya']+$total_biaya;
+
+    if ($id_sparepart) {
+        $query = "INSERT INTO detail_transaksi
                 VALUES
                 ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')";
+    }else{
+        $query = "INSERT INTO detail_transaksi
+                VALUES
+                ('$id_transaksi','$id_device','$id_layanan', '', '')";
+    }
+
+    $query = "INSERT INTO detail_transaksi
+                VALUES
+                ('','$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')";
 
     $query_tr = "UPDATE transaksi
                 SET 
@@ -120,16 +113,31 @@ function tambah_detail_transaksi($data){
     
     mysqli_query($conn,$query);
     mysqli_query($conn,$query_tr);
-    
-    // mysqli_query($conn,"INSERT INTO detail_transaksi
-    // VALUES
-    // ('$id_transaksi','$id_device','$id_layanan', '$id_sparepart', '$jml_sparepart')");
-    // // mysqli_query($conn,$query_tr);
-    // mysqli_query($conn,"UPDATE transaksi
-    // SET 
-    // total_biaya='$total_biaya'
-    // WHERE id_transaksi = '$id_transaksi'");
+    return mysqli_affected_rows($conn);
 }
+
+function edit_detail_transaksi($data){
+    global $conn;
+
+    $id_detail_transaksi = $data["id_detail_transaksi"];
+    $id_device = $data["id_device"];
+    $id_layanan = $data["id_layanan"];
+    $id_sparepart = $data["id_sparepart"];
+    $jumlah_sparepart = $data["jumlah_sparepart"];
+
+    var_dump($id_detail_transaksi);
+    $query = "UPDATE detail_transaksi
+                SET
+                id_device='$id_device',
+                id_layanan='$id_layanan',
+                id_sparepart='$id_sparepart',
+                jumlah_sparepart='$jumlah_sparepart'
+                WHERE id_detail_transaksi = '$id_detail_transaksi'";
+
+    mysqli_query($conn,$query);
+    return mysqli_affected_rows($conn);
+}
+
 
 // FUNCTION SPAREPART
 function tambah_sparepart($data){
@@ -139,10 +147,11 @@ function tambah_sparepart($data){
     $tipe = $data["tipe"];
     $stok = $data["stok"];
     $harga = $data["harga"];
+    $laba = $data["laba"];
 
     $query = "INSERT INTO sparepart
                 VALUES
-                ('', '$nama','$tipe','$stok','$harga')";
+                ('', '$nama','$tipe','$stok','$harga','$laba')";
 
     mysqli_query($conn,$query);
 
@@ -157,10 +166,11 @@ function edit_sparepart($data){
     $tipe = $data["tipe"];
     $stok = $data["stok"];
     $harga = $data["harga"];
+    $laba = $data["laba"];
 
     $query = "UPDATE sparepart
                 SET
-                nama='$nama',tipe='$tipe',stok='$stok',harga='$harga'
+                nama='$nama',tipe='$tipe',stok='$stok',harga='$harga', laba='$laba'
                 WHERE id_sparepart = '$id_sparepart'";
 
     mysqli_query($conn,$query);
@@ -305,10 +315,11 @@ function tambah_layanan($data){
     $tipe = $data["tipe"];
     $keluhan = $data["keluhan"];
     $biaya = $data["biaya"];
+    $laba = $data["laba"];
 
     $query = "INSERT INTO layanan
                 VALUES
-                ('', '$tipe','$keluhan','$biaya')";
+                ('', '$tipe','$keluhan','$biaya','$laba')";
 
     mysqli_query($conn,$query);
 
@@ -322,10 +333,11 @@ function edit_layanan($data){
     $tipe = $data["tipe"];
     $keluhan = $data["keluhan"];
     $biaya = $data["biaya"];
+    $laba = $data["laba"];
 
     $query = "UPDATE layanan
                 SET
-                tipe_layanan='$tipe', keluhan='$keluhan', biaya='$biaya'
+                tipe_layanan='$tipe', keluhan='$keluhan', biaya='$biaya', laba='$laba'
                 WHERE id_layanan='$id_layanan'";
 
     mysqli_query($conn,$query);

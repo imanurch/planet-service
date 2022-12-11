@@ -14,46 +14,16 @@ if(isset($_POST["logout"])){
 }
 
 include 'function.php';
-// PAGINATION
-    // menyimpan url halaman saat ini dengan fungsi get
-    // misalnya kalian akan melihat ?halaman= 3 pada url di atas, maka 3 akan disimpan ke dalam var halaman
-    $halaman        = isset($_GET['halaman'])?(int)$_GET['halaman'] : 1;
-
-    // jika nilai halaman lebih besar dari 1 maka halaman awal adalah halaman dikali 10 - 10
-    // jika nilai halaman lebih kecil dari 1 maka halaman awal adalah 0
-    $halaman_awal   = ($halaman > 1) ? ($halaman * 10) - 10 : 0;
-
-    // jika kembali dikurangi 1 dan jika setelahnya ditambah 1
-    $sebelum        = $halaman - 1;
-    $setelah        = $halaman + 1;
-
-    // mengambil data dari tabel pegawai untuk ditotal
-    // $datas           = mysqli_query($koneksi, "select * from pegawai");
-    $total_layanan = mysqli_query($conn, "SELECT * FROM layanan");
-
-    // jumlah data pegawai ditotal
-    // $total_row    = mysqli_num_rows($datas);
-    $total_row = mysqli_num_rows($total_layanan);
-    
-    // ceil adalah fungsi pembulatan pada php
-    $total_halaman  = ceil($total_row / 10);
-
-    // yang ini mengambil data pengawai untuk ditampilkan dengan fungsi limit
-    // satu halaman akan ditampilkan paling banyak 10 atau limit 10
-    // $data_pegawais   = mysqli_query($koneksi, "select * from pegawai limit $halaman_awal, 10");
-
-    // nomor digunakan untuk penomoran pada kolom no
-    // karena index dimulai dari angka 0 maka perlu ditambah 1
-    $nomor          = $halaman_awal + 1;
-
-    //melakukan looping data
-    // while($data = mysqli_fetch_array($data_pegawais)){
-
-
 
 
 $total_layanan = mysqli_query($conn, "SELECT * FROM layanan");
 $total_row = mysqli_num_rows($total_layanan);
+$max_data = 10;
+$jml_halaman = ceil($total_row/$max_data);
+$hal_aktif = isset($_GET['hal'])?(int)$_GET['hal'] : 1;
+$awal_data = ($max_data*$hal_aktif)-$max_data;
+
+
 
 $field = "tipe_layanan";
 if(isset($_POST['sort'])){
@@ -69,6 +39,9 @@ if(isset($_POST['flow'])){
 $max = "10";
 if(isset($_POST['max'])){
   $max = $_POST['max'];
+  header('refresh:0; url=data_layanan.php');
+  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $max"); 
+
 }
 
 // $range = 20;
@@ -84,14 +57,16 @@ if(isset($_POST["submitsearch"])){
                       WHERE tipe_layanan LIKE '%$search%' 
                       OR keluhan LIKE '%$search%'
                       OR biaya LIKE '%$search%'
+                      OR laba LIKE '%$search%'
                       ORDER BY $field $flow LIMIT $max");
 } else{
-  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $halaman_awal, 10"); 
+  $layanan = query("SELECT * FROM layanan ORDER BY $field $flow LIMIT $awal_data, $max_data"); 
 }
 
 if(isset($_POST["reset"])){
   $reset = $_POST["reset"];
-  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT  $halaman_awal, 10");
+  header('refresh:0; url=data_layanan.php');
+  $layanan = query("SELECT * FROM layanan ORDER BY tipe_layanan ASC LIMIT  0, 10");
 }
 
 if(isset($_POST["submit"])){
@@ -122,9 +97,6 @@ if(isset($_POST["submithapus"])){
 }
 
 
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -135,8 +107,8 @@ if(isset($_POST["submithapus"])){
     <title>Data Layanan</title>
     <link href="../scss/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous"> -->
   </head>
   <body>
     <!-- SIDEBARR -->
@@ -203,6 +175,7 @@ if(isset($_POST["submithapus"])){
                 <option selected value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
                 <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>
                 <option value="biaya" <?php if(isset($_GET['sort']) && $_GET['sort'] == "biaya"){echo "selected";}?>>biaya</option>
+                <option value="laba" <?php if(isset($_GET['sort']) && $_GET['sort'] == "laba"){echo "selected";}?>>laba</option>
               </select>
               <select name="flow" id="flow" class="form-select">
                 <!-- <option selected disabled>--pilih--</option> -->
@@ -250,6 +223,9 @@ if(isset($_POST["submithapus"])){
                       <label for="biaya" class="form-label">Biaya</label>
                       <input type="text" class="form-control" id="biaya" name="biaya" />
                 
+                      <label for="laba" class="form-label">Laba</label>
+                      <input type="text" class="form-control" id="laba" name="laba" />
+                
                       <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit" >Submit</button>
                 </form>
               </div>
@@ -260,6 +236,9 @@ if(isset($_POST["submithapus"])){
         </div>
 
         <!-- TABEL DATA LAYANAN -->
+        <?php for($pg = 1; $pg <= $jml_halaman; $pg++ ) : ?>
+          <a href="?hal=<?= $pg;?>"><?= $pg;?></a>
+        <?php endfor; ?>
         <p class="mt-3 mb-0 text-secondary">Total Data : <?php echo $total_row; ?></p>
         <div class="col-12 mb-3">
           <table class="table border">
@@ -269,6 +248,7 @@ if(isset($_POST["submithapus"])){
                 <th class="text-secondary">TIPE LAYANAN</th>
                 <th class="text-secondary">KELUHAN</th>
                 <th class="text-secondary">BIAYA</th>
+                <th class="text-secondary">LABA(%)</th>
                 <th></th>
                 <th></th>
               </tr>
@@ -281,6 +261,7 @@ if(isset($_POST["submithapus"])){
                 <td class="mb-0"><?= $ly["tipe_layanan"];?></td>
                 <td class="mb-0"><?= $ly["keluhan"];?></td>
                 <td class="text-center mb-0"><?= $ly["biaya"];?></td>
+                <td class="text-center mb-0"><?= $ly["laba"];?></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#edit<?= $ly["id_layanan"];?>" data-bs-toggle="modal" data-bs-target="#edit<?= $ly["id_layanan"];?>"><img src="../pic/edit.svg" alt=""></a></td>
                 <td><a class="btn btn-outline-secondary mt-3" href="#hapus<?= $ly["id_layanan"];?>" data-bs-toggle="modal" data-bs-target="#hapus<?= $ly["id_layanan"];?>"><img src="../pic/trash.svg" alt=""></a></td>
 
@@ -297,8 +278,8 @@ if(isset($_POST["submithapus"])){
                         <input type="hidden" class="form-control" id="id_layanan" name="id_layanan" value="<?= $ly["id_layanan"]?>"/>
                               <label for="tipe" class="form-label">Tipe</label>                             
                               <select class="form-select" id="tipe" name="tipe" value ="<?= $ly["id_layanan"];?>" placeholder="<?= $ly["id_layanan"];?>">
-                                <option value="1">Jasa</option>
-                                <option value="2">Ganti Sparepart</option>
+                                <option value="Jasa">Jasa</option>
+                                <option value="Ganti Sparepart">Ganti Sparepart</option>
                               </select>
                             
                               <label for="keluhan" class="form-label">Keluhan</label>
@@ -306,6 +287,9 @@ if(isset($_POST["submithapus"])){
                             
                               <label for="biaya" class="form-label">Biaya</label>
                               <input type="text" class="form-control" id="biaya" name="biaya" value ="<?= $ly["biaya"];?>" placeholder="<?= $ly["biaya"];?>"/>
+                        
+                              <label for="laba" class="form-label">Laba(%)</label>
+                              <input type="text" class="form-control" id="laba" name="laba" value ="<?= $ly["laba"];?>" placeholder="<?= $ly["laba"];?>"/>
                         
                               <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submitedit" >Submit</button>
                         </form>
@@ -344,10 +328,15 @@ if(isset($_POST["submithapus"])){
             </tbody>
           </table>
         </div> 
-        <div class = "text-center mb-4">
-          <button class="btn btn-secondary"><img src="../pic/chevron-left.svg" alt=""></button>
-          <button class="btn btn-secondary"><img src="../pic/chevron-right.svg" alt=""></button>
-        </div>
+
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <?php for($pg = 1; $pg <= $jml_halaman; $pg++ ) : ?>
+            <a class="page-item"><a class="page-link" href="?hal=<?= $pg;?>"><?= $pg;?></li>
+            <?php endfor; ?>
+          </ul>
+        </nav>
+
 
         <!-- <nav aria-label="Page navigation example">
           <ul class="pagination">
@@ -366,7 +355,7 @@ if(isset($_POST["submithapus"])){
             </li>
           </ul>
         </nav> -->
-        <nav>
+        <!-- <nav>
                 <ul class="pagination">
                     <li class="page-item">
                         <a class="page-link" <?php if($halaman > 1){ echo "href='?halaman=$sebelum'"; } ?>>Previous</a>
@@ -382,7 +371,7 @@ if(isset($_POST["submithapus"])){
                         <a  class="page-link" <?php  if($halaman < $total_halaman) { echo "href='?halaman=$setelah'"; } ?>>Next</a>
                     </li>
                 </ul>
-            </nav>
+            </nav> -->
       </div>
     </div>
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
@@ -390,68 +379,3 @@ if(isset($_POST["submithapus"])){
 </html>
 
 
-
-
-
-
-        <!-- SEARCH BAR -->
-        <!-- <div style="width:200px;">
-          <div class="input-group">
-            <form action="" method="get">
-              <input type="search" id="form1" class="form-control " placeholder="Cari..." name="search" />
-            </form>
-          </div>            
-        </div> -->
-        <!-- MAX DATA -->
-          <!-- <form action="" method="get" class="px-0">
-            <div class="input-group">
-              <button type="submit" class="input-group-text btn btn-secondary" name = "10" >10</button>
-              <button type="submit" class="input-group-text btn btn-secondary" name = "25" >25</button>
-            </div>
-          </form> -->
-                
-        <!-- BUTTON MODAL INSERT -->
-        <!-- <div class="col-12">
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="float:right">
-            Tambah Data
-          </button>
-        </div>   -->
-        
-        <!-- SORT -->
-        <!-- <form action="" method="get">
-          <div class="row" style="width:170px">
-            <div class="col-12 my-3">
-              <div class="input-group">
-                <select name="sort" id="sort" class="form-control">
-                  <option selected disabled>--pilih--</option>
-                  <option value="tipe_layanan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "tipe_layanan"){echo "selected";}?>>tipe_layanan</option>
-                  <option value="keluhan" <?php if(isset($_GET['sort']) && $_GET['sort'] == "keluhan"){echo "selected";}?>>keluhan</option>
-                  <option value="biaya" <?php if(isset($_GET['sort']) && $_GET['sort'] == "biaya"){echo "selected";}?>>biaya</option>
-                </select>
-                <button type="submit" class="input-group-text btn btn-secondary" name="submit" >Urut</button>
-              </div>
-            </div>
-          </div>
-        </form> -->
-
-        <!-- switch -->
-        <!-- <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-          <label class="form-check-label" for="flexSwitchCheckChecked">Descending</label>
-        </div> -->
-
-        <!-- RESET FILTER -->
-        <!-- <form action="" method="post">
-          <button class="input-group-text btn btn-secondary" style="" id="reset" name="reset">
-            Reset filter
-          </button>
-        </form> -->
-
-        <!-- RANGE DATA -->
-        <!-- <form action="" method="get" class="px-0">
-          <div class="input-group">
-            <button type="submit" class="input-group-text btn btn-secondary" name = "pg1" >1</button>
-            <button type="submit" class="input-group-text btn btn-secondary" name = "pg2" >2</button>
-            <button type="submit" class="input-group-text btn btn-secondary" name = "pg3" >3</button>
-          </div>
-        </form> -->
