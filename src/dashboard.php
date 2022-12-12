@@ -14,11 +14,21 @@ if(isset($_POST["logout"])){
 }
 
 include 'function.php';
+date_default_timezone_set('Asia/Jakarta');
 
 $layanan = mysqli_query($conn, "SELECT * FROM layanan");
 $sparepart = mysqli_query($conn, "SELECT DISTINCT nama FROM sparepart");
 $teknisi = mysqli_query($conn, "SELECT * FROM teknisi");
 $transaksi = mysqli_query($conn, "SELECT * FROM transaksi");
+$date= "date('Y-m-d')";
+$total_laba = query("SELECT t.tgl_transaksi, ly.biaya, ly.laba, spr.harga, spr.laba, dt.jumlah_sparepart, 
+                                  SUM((ly.biaya*ly.laba/100)+((spr.harga*dt.jumlah_sparepart)*spr.laba/100)) as total_laba 
+                                  FROM detail_transaksi dt 
+                                  JOIN layanan ly USING (id_layanan) 
+                                  JOIN sparepart spr USING (id_sparepart) 
+                                  JOIN transaksi t USING (id_transaksi) 
+                                  WHERE DATE(tgl_transaksi)="$date"");
+var_dump($total_laba);
 
 $jml_layanan = mysqli_num_rows($layanan);
 $jml_sparepart = mysqli_num_rows($sparepart);
@@ -146,6 +156,34 @@ $jml_transaksi = mysqli_num_rows($transaksi);
             </div>
           </div>
         </div>
+
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+          <div class="card">
+            <div class="card-header py-2 px-4">
+              <div>
+                <img src="../pic/ava.png" class="py-1 my-0" style="width: 4rem; float: left" alt="" />
+              </div>
+              <div class="text-end py-2">
+                <p class="text-sm mb-0 text-capitalize">Total Keuntungan/Laba</p>
+                <form action="" method="post">
+                      <label for="ttl" class="form-label">Tanggal</label>
+                      <input type="date" class="form-control" id="ttl" name="ttl" />
+                    
+                      <button type="submit" class="btn btn-secondary mt-3" style="float:right" name="submit" >Submit</button>
+                </form>
+                <h4 class="mb-0 pb-0"><?php echo $total_laba[0]["total_laba"];?></h4>
+              </div>
+            </div>
+            <hr class="horizontal my-0" />
+            <div class="card-footer pt-2">
+              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+25% </span>dari minggu lalu</p>
+            </div>
+          </div>
+        </div>
+
+
+
+
         <!-- GRAFIK -->
         <div class="grafik my-5">
           <div class="col-lg-6">
